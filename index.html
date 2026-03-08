@@ -21,6 +21,11 @@
             --border-soft: #d8d6d0;
         }
 
+        /* --- UX: SCROLL MAGNÉTICO (RESISTENCIA) --- */
+        html {
+            scroll-snap-type: y mandatory;
+        }
+
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'IBM Plex Mono', monospace; 
@@ -35,7 +40,7 @@
         #loader-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh;
             z-index: 9999; background-color: var(--bg-color);
-            transition: opacity 1.5s ease;
+            transition: opacity 1s ease;
         }
         #text-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -68,14 +73,16 @@
         #physics-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; }
         .physics-letter { position: absolute; color: rgba(0, 0, 0, 0.07); will-change: transform, filter; font-weight: bold; }
 
-        /* --- 03. ESTRUCTURA SEGMENTOS --- */
-        #main-content { display: none; opacity: 0; position: relative; z-index: 10; transition: opacity 2s ease; }
+        /* --- 03. ESTRUCTURA SEGMENTOS (MÁS RÁPIDOS) --- */
+        #main-content { display: none; opacity: 0; position: relative; z-index: 10; transition: opacity 1s ease; }
         .segment { 
             min-height: 100vh; min-height: 100dvh; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
             opacity: 0; transform: translateY(40px);
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            scroll-snap-align: start; 
+            scroll-snap-stop: always; 
         }
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
@@ -140,23 +147,47 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO --- */
+        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO LÚDICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
-        .gallery-header p { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); }
         
-        .slider-container { width: 100vw; overflow-x: auto; scrollbar-width: none; margin-top: 40px; padding-bottom: 20px;}
-        .slider-track { display: flex; gap: 40px; padding: 0 8vw; width: max-content; }
-        .polaroid { flex: 0 0 260px; background: white; padding: 15px 15px 40px 15px; border: 1px solid var(--border-soft); box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
-        .polaroid img { width: 100%; height: auto; filter: grayscale(0.2); }
+        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; margin-top: 20px;}
+        
+        /* Cinta de Pestañas (Index Telefónico) */
+        .alphabet-ribbon {
+            display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+            padding-bottom: 0; border-bottom: 2px solid var(--text-main);
+            margin-bottom: 30px; cursor: grab;
+        }
+        .alphabet-ribbon::-webkit-scrollbar { display: none; }
+        
+        .alpha-letter {
+            font-size: 1rem; color: var(--text-main); cursor: pointer;
+            transition: all 0.2s ease; flex-shrink: 0; font-weight: 400; 
+            padding: 8px 15px; border: 1px solid var(--text-main);
+            border-bottom: none; border-radius: 5px 5px 0 0;
+            background: #e9e8e4; white-space: nowrap;
+        }
+        .alpha-letter:hover { background: #dcdbd7; }
+        .alpha-letter.active {
+            font-weight: 700; background: var(--text-main); color: var(--bg-color);
+            transform: translateY(2px); /* Conecta visualmente con la línea inferior */
+        }
 
-        .directory-container { width: 100%; max-width: 800px; margin: 60px auto 0; padding: 0 8vw; box-sizing: border-box; }
-        .dir-row { display: flex; align-items: flex-start; border-bottom: 1px solid var(--border-soft); padding: 15px 0; }
-        .dir-letter { font-weight: bold; font-size: 1.2rem; width: 40px; color: var(--text-light); flex-shrink: 0;}
-        .dir-artist { font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
-        .dir-poem { font-size: 0.95rem; font-style: italic; color: var(--text-main); }
+        /* Tarjeta de Contacto (Visor) */
+        .contact-card {
+            display: flex; gap: 40px; align-items: flex-start; 
+            background: white; padding: 30px; border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            transition: opacity 0.3s ease;
+        }
+        .card-img-container { flex: 0 0 40%; max-width: 350px; }
+        .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
         
-        .fine-print { font-size: 0.7rem; color: var(--text-light); opacity: 0.7; margin-top: 50px; text-align: center; width: 100%; line-height: 1.6; }
+        .card-info { flex: 1; text-align: left; position: relative; }
+        .card-letter-bg { font-size: 5rem; font-weight: 300; color: var(--bg-color); position: absolute; top: -40px; left: -15px; z-index: 0; pointer-events: none;}
+        .card-artist { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; position: relative; z-index: 1;}
+        .card-poem { font-size: 1.2rem; font-style: italic; color: var(--text-light); line-height: 1.6; position: relative; z-index: 1;}
 
         /* --- 07. PREMIO MINCUL --- */
         .award-segment { background: var(--bg-dark) !important; color: white; text-align: center; overflow: hidden; }
@@ -195,6 +226,12 @@
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.2rem; padding: 0 5vw; line-height: 1.5; }
+            
+            .contact-card { flex-direction: column; gap: 25px; padding: 20px; }
+            .card-img-container { width: 100%; max-width: 100%; }
+            .card-artist { font-size: 1rem; }
+            .card-poem { font-size: 1.1rem; }
+            .card-letter-bg { font-size: 4rem; top: -30px; }
         }
     </style>
 </head>
@@ -264,50 +301,22 @@
             
             <div class="gallery-header">
                 <h2 style="font-weight: 300; margin-bottom: 5px; font-size: 2rem;">Archivo Visual</h2>
-                <p>Escoge tu print</p>
             </div>
 
-            <div class="slider-container">
-                <div class="slider-track">
-                    <div class="polaroid"><img src="img/foto1.png" alt="Print 1" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
-                    <div class="polaroid"><img src="img/foto2.png" alt="Print 2" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
-                    <div class="polaroid"><img src="img/foto3.png" alt="Print 3" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
-                    <div class="polaroid"><img src="img/foto4.png" alt="Print 4" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
-                </div>
-            </div>
+            <div class="directory-wrapper">
+                <div class="alphabet-ribbon" id="alpha-ribbon"></div>
 
-            <div class="directory-container">
-                <div class="dir-row">
-                    <div class="dir-letter">A</div>
-                    <div class="dir-data">
-                        <div class="dir-artist">Artista 1</div>
-                        <div class="dir-poem">"Se ha producido un error, Daniel. Te has alejado demasiado."</div>
+                <div class="contact-card" id="contact-viewer">
+                    <div class="card-img-container">
+                        <img id="cv-img" src="" alt="Print" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'400\'><rect width=\'300\' height=\'400\' fill=\'%23f6f5f2\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'14px\' fill=\'%23aaa\'>IMAGEN NO ENCONTRADA</text></svg>'">
                     </div>
-                </div>
-                <div class="dir-row">
-                    <div class="dir-letter">B</div>
-                    <div class="dir-data">
-                        <div class="dir-artist">Artista 2</div>
-                        <div class="dir-poem">"El poema nace del mismo lugar que el beso."</div>
-                    </div>
-                </div>
-                <div class="dir-row">
-                    <div class="dir-letter">C</div>
-                    <div class="dir-data">
-                        <div class="dir-artist">Artista 3</div>
-                        <div class="dir-poem">"La salida es el comienzo."</div>
-                    </div>
-                </div>
-                <div class="dir-row">
-                    <div class="dir-letter">D</div>
-                    <div class="dir-data">
-                        <div class="dir-artist">Artista 4</div>
-                        <div class="dir-poem">"El tiempo es solo una duda."</div>
+                    <div class="card-info">
+                        <div class="card-letter-bg" id="cv-letter-bg"></div>
+                        <div class="card-artist" id="cv-artist"></div>
+                        <div class="card-poem" id="cv-poem"></div>
                     </div>
                 </div>
             </div>
-
-            <p class="fine-print">La compra incluye un llavero y un sticker.<br>Delivery no incluido.</p>
         </section>
 
         <section class="segment">
@@ -420,7 +429,7 @@
             "Mis mejores versos los hago en tus labios."
         ];
 
-        // --- 01. MATRIX LOADER ---
+        // --- 01. MATRIX LOADER (MÁS RÁPIDO) ---
         const textContainer = document.getElementById('dynamic-text');
         const charsPool = "abcdefghijklmnopqrstuvwxyz ";
         let charCount = 3000;
@@ -454,7 +463,7 @@
             }
         }
         
-        let matrixInt = setInterval(updateMatrix, 160);
+        let matrixInt = setInterval(updateMatrix, 100);
 
         const loaderWrapper = document.getElementById('loader-wrapper');
         
@@ -488,7 +497,7 @@
         loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
         loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
-        // --- 02. FÍSICAS (SOLO LETRAS, SIN NÚMEROS) ---
+        // --- 02. FÍSICAS (MÁS RÁPIDO) ---
         const { Engine, Runner, Bodies, Composite, Events } = Matter;
         const engine = Engine.create();
         function initPhysics() {
@@ -506,7 +515,7 @@
                 const body = Bodies.rectangle(Math.random()*width, -50, size, size, { restitution: 0.4, friction: 0.2 });
                 Composite.add(engine.world, body);
                 letters.push({ body, elem: div });
-            }, 50);
+            }, 40);
             Events.on(engine, 'afterUpdate', () => {
                 letters.forEach(item => {
                     const { x, y } = item.body.position;
@@ -583,7 +592,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN (SCROLL LIBERADO) ---
+        // --- 04. REVELACIÓN ---
         const interactionLayer = document.getElementById('reveal-interaction-layer');
         const maskedLayer = document.getElementById('reveal-masked-layer');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
@@ -618,10 +627,9 @@
         });
 
         interactionLayer.addEventListener('touchmove', (e) => {
-            // SE HA QUITADO EL PREVENT DEFAULT PARA PERMITIR SCROLL NATURAL
             const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: true}); // PASSIVE TRUE PERMITE EL SCROLL NATIVO
+        }, {passive: true});
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -641,6 +649,77 @@
             }, 80);
         }
 
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO ---
+        const directoryData = {
+            'A': { artist: 'Pancho Muñante (PER)', poem: 'El amor es mitad dolor. / ¿Y la otra mitad? / Tú.' },
+            'B': { artist: 'Mónica Torrejon (PER)', poem: 'El poema nace del mismo lugar que el beso.' },
+            'C': { artist: 'Flor Marin (PER)', poem: 'La realidad solo por ser compartida ya es una negociación con el otro.' },
+            'D': { artist: 'Diablo Cosmico (PER)', poem: 'El tiempo es solo una duda.' },
+            'E': { artist: 'Carla Eráusquin (PER)', poem: 'Te extraño más cuando no estás.' },
+            'F': { artist: 'Anthony Bornachot (FRA)', poem: 'El futuro es la gran promesa que lo justifica todo.' },
+            'G': { artist: 'Edurne Lacunza (ESP)', poem: 'Sembrar sueños gota a gota en el fondo del mar.' },
+            'H': { artist: 'Daniela Beracochea (URU)', poem: 'Habitamos el sueño de un dios.' },
+            'I': { artist: 'José Chang (MEX)', poem: 'Toma tiempo amar lo invisible.' },
+            'J': { artist: 'Jessie Laura (PER)', poem: 'Jesús no murió, lo mataron.' },
+            'K': { artist: 'Sandra Travezaño (PER)', poem: 'El mar entero cabe en la mitad de tu sonrisa.' },
+            'L': { artist: 'Carla Montalvo (PER)', poem: 'Lima solo es bella desde la indiferencia.' },
+            'M': { artist: 'Ismael Angeles (MEX)', poem: 'La muerte es este momento / la vida es este momento.' },
+            'N': { artist: 'Bolo Torres (ECU)', poem: 'Todo depende de nada.' },
+            'O': { artist: 'Vanessa Alexandre (BRA)', poem: 'Es imposible vivir sin olvidar.' },
+            'P': { artist: 'Meri Hernandez (ESP)', poem: 'Podrás dejar de ser clase media, pero jamás dejarás de trabajar.' },
+            'Q': { artist: 'Ber Yuen (PER)', poem: '¿Qué sería de dios sin las cárceles?' },
+            'R': { artist: 'Lourdes Perez Lopez (ESP)', poem: 'El absurdo debe ser radical.' },
+            'S': { artist: 'Jose Urbina (COL)', poem: 'Sentir es otra forma de conocer.' },
+            'T': { artist: 'Jerson La Torre (PER)', poem: 'El tiempo es solo una duda.' },
+            'U': { artist: 'Daniel Mateos (MEX)', poem: 'Un segundo bastará para llegar a tu destino.' },
+            'V': { artist: 'Andrea Lertora (PER)', poem: 'Mis mejores versos los hago en tus labios.' },
+            'W': { artist: 'Dominique Millán (PER)', poem: 'Bailar siempre trae consecuencias.' },
+            'X': { artist: 'Marta Casares (ESP)', poem: 'Consume hasta morir.' },
+            'Y': { artist: 'Mucho (PER)', poem: 'Yo olvido más de lo que escribo.' },
+            'Z': { artist: 'Elian Tuya (PER)', poem: 'La salida es el comienzo.' },
+            'COL-I': { artist: 'La Koneko (PER)', poem: 'El fragmento como totalidad del poema es el arma.' },
+            'COL-II': { artist: 'Kapitan Ketchup (PER)', poem: 'Se reparan galaxias destruidas.' },
+            'COL-III': { artist: 'Claudia Prezioso (URU)', poem: 'Deberías estar a este lado del sol.' },
+            'COL-IV': { artist: 'Irene Fenollar (ESP)', poem: 'Deja que el lector imagine el poema.' },
+            '31V': { artist: 'Malcon D´ Stefano (ARG)', poem: 'El pensamiento es la forma y el cuerpo el escenario.' },
+            '32F': { artist: 'German Gonzales (ARG)', poem: 'La ciudad solo existe porque la imaginas.' }
+        };
+
+        function initDirectory() {
+            const ribbon = document.getElementById('alpha-ribbon');
+            const keys = Object.keys(directoryData);
+            
+            keys.forEach((key, index) => {
+                let div = document.createElement('div');
+                div.className = 'alpha-letter';
+                div.innerText = key;
+                
+                if(index === 0) {
+                    div.classList.add('active');
+                    loadContactCard(key);
+                }
+                
+                div.onclick = () => {
+                    document.querySelectorAll('.alpha-letter').forEach(el => el.classList.remove('active'));
+                    div.classList.add('active');
+                    
+                    const viewer = document.getElementById('contact-viewer');
+                    viewer.style.opacity = 0;
+                    
+                    setTimeout(() => { loadContactCard(key); viewer.style.opacity = 1; }, 300);
+                };
+                ribbon.appendChild(div);
+            });
+        }
+
+        function loadContactCard(key) {
+            // Construye la ruta de la imagen exactamente como se te solicitó
+            document.getElementById('cv-img').src = `img/ilu/${key}.jpg`;
+            document.getElementById('cv-letter-bg').innerText = key;
+            document.getElementById('cv-artist').innerText = directoryData[key].artist;
+            document.getElementById('cv-poem').innerText = `"${directoryData[key].poem}"`;
+        }
+
         // --- ARRANQUE ---
         document.getElementById('logo-container').onclick = () => {
             clearInterval(matrixInt);
@@ -651,13 +730,13 @@
                 document.getElementById('main-content').style.display = 'block';
                 document.getElementById('main-content').style.opacity = '1';
                 document.body.classList.remove('scroll-locked');
-                initPhysics(); createRadiatingSun();
+                initPhysics(); createRadiatingSun(); initDirectory();
                 
                 const obs = new IntersectionObserver((entries) => {
                     entries.forEach(e => { 
                         if(e.isIntersecting) { e.target.classList.add('ghost-in'); }
                     });
-                }, { threshold: 0.3 });
+                }, { threshold: 0.2 });
                 
                 document.querySelectorAll('.segment').forEach(s => obs.observe(s));
             }, 1000);
