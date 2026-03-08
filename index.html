@@ -117,7 +117,7 @@
         #oracle-key { cursor: grab; touch-action: none; z-index: 100; background: white; }
         #oracle-briefcase { border-style: dashed; }
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
-        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center; white-space: pre-wrap;}
+        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
 
         /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
@@ -202,6 +202,7 @@
             transition: opacity 0.3s ease; min-height: 250px;
         }
         
+        /* Lupa y Modal de Imagen */
         .card-img-container { flex: 0 0 40%; max-width: 350px; position: relative; cursor: zoom-in; }
         .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
         .zoom-overlay {
@@ -211,7 +212,6 @@
         }
         .card-img-container:hover .zoom-overlay { opacity: 1; }
 
-        /* NUEVO: MODAL CON ZOOM DINÁMICO */
         .image-modal {
             display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(246, 245, 242, 0.98); flex-direction: column;
@@ -269,11 +269,11 @@
         }
         .btn-typewriter:hover { background: white; color: var(--bg-dark); border-style: solid !important; }
 
-        /* MOBILE ADJUSTMENTS */
+        /* MOBILE ADJUSTMENTS (CORRECCIÓN DE SOLAPAMIENTOS) */
         @media (max-width: 768px) {
-            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
-            .reveal-ui { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto 10vh auto; }
+            .reveal-segment { display: flex; flex-direction: column; text-align: center; justify-content: center; gap: 5vh; padding: 10vh 5vw !important; }
+            .reveal-ui { position: relative; top: auto; left: auto; transform: none; width: 100%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
+            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto; }
             .reveal-book-wrapper { max-width: 100%; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
@@ -627,13 +627,13 @@
                 key.style.display = 'none'; box.innerHTML = "—";
                 
                 let item = oraclePoems[Math.floor(Math.random() * oraclePoems.length)];
-                let plainTxt = item.text + "\n\n- Letra " + item.letter;
+                let plainTxt = item.text + " — Letra " + item.letter;
                 
                 verseText.innerHTML = "";
                 let i = 0;
                 const type = () => { 
                     if(i < plainTxt.length) { 
-                        verseText.innerText += plainTxt.charAt(i); 
+                        verseText.innerHTML += plainTxt.charAt(i); 
                         i++; 
                         setTimeout(type, 35); 
                     }
@@ -645,7 +645,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN CONFINADA ---
+        // --- 04. REVELACIÓN (CONFINADA Y LIBRE DE SCROLL) ---
         const bookZone = document.getElementById('reveal-container');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
@@ -684,6 +684,7 @@
             bookZone.style.setProperty('--my', `-100%`);
         });
 
+        // Bloqueo táctil AHORA SOLO OCURRE dentro de la caja del libro
         bookZone.addEventListener('touchmove', (e) => {
             e.preventDefault(); 
             const rect = bookZone.getBoundingClientRect();
@@ -754,6 +755,7 @@
             const ribbonLeft = document.getElementById('ribbon-left');
             const ribbonRight = document.getElementById('ribbon-right');
             
+            // Navegación de flechas
             ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
             ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
 
@@ -864,7 +866,6 @@
                 wrapper.style.alignItems = 'center';
                 wrapper.style.justifyContent = 'center';
             } else {
-                // Al hacer zoom ampliamos el ancho para que el wrapper haga scroll automático
                 img.style.width = `${level * 100}vw`;
                 img.style.height = 'auto';
                 img.style.maxWidth = 'none';
