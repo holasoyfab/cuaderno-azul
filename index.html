@@ -21,7 +21,7 @@
             --border-soft: #d8d6d0;
         }
 
-        /* --- SCROLL MAGNÉTICO (RESISTENCIA) --- */
+        /* --- UX: SCROLL MAGNÉTICO (RESISTENCIA) --- */
         html {
             scroll-snap-type: y mandatory;
         }
@@ -46,8 +46,8 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             padding: 2vw; box-sizing: border-box; overflow: hidden;
             text-align: justify; word-break: break-all; 
-            font-size: 0.9rem; /* Letras más pequeñas */
-            letter-spacing: -1px; /* Interletrado más junto */
+            font-size: 0.85rem; /* Más chiquito */
+            letter-spacing: -1.5px; /* Interletrado más junto */
             line-height: 1.5; 
             color: rgba(0, 0, 0, 0.35); 
             -webkit-mask-image: radial-gradient(circle at center, transparent 130px, black 150px);
@@ -81,8 +81,8 @@
             justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
             opacity: 0; transform: translateY(40px);
             transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-            scroll-snap-align: start; /* Anclaje magnético */
-            scroll-snap-stop: always; /* Obliga a frenar en cada sección */
+            scroll-snap-align: start; /* Enganche magnético por sección */
+            scroll-snap-stop: always; 
         }
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
@@ -109,7 +109,7 @@
         
         #reveal-interaction-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair; touch-action: none; /* Bloquea acciones táctiles nativas aquí */
+            z-index: 5; cursor: crosshair; touch-action: none; /* Evita que el dedo haga scroll mientras iluminas */
         }
 
         .reveal-ui { 
@@ -147,6 +147,18 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
+        /* Botón de escape de la linterna */
+        .scroll-down-btn {
+            position: absolute; bottom: 4vh; left: 50%; transform: translateX(-50%);
+            z-index: 30; color: rgba(255,255,255,0.5); font-size: 0.6rem;
+            letter-spacing: 4px; cursor: pointer; padding: 15px; text-align: center;
+            animation: bounceFloat 2s infinite; pointer-events: auto;
+        }
+        @keyframes bounceFloat {
+            0%, 100% { transform: translate(-50%, 0); opacity: 0.4; }
+            50% { transform: translate(-50%, 8px); opacity: 1; }
+        }
+
         /* --- 06. ARCHIVO VISUAL Y DIRECTORIO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
@@ -181,11 +193,11 @@
         }
         .btn-minimal:hover { background: var(--text-main); color: var(--bg-color); }
         
-        /* Botón Máquina de escribir (Dashed) */
         .btn-typewriter { 
             border: 1px dashed rgba(255, 255, 255, 0.6) !important; 
             color: white; 
-            margin-top: 5px; /* Más pegado al texto superior para separarse de la imagen */
+            margin-top: 15px; 
+            background: transparent;
         }
         .btn-typewriter:hover { 
             background: white; 
@@ -193,15 +205,14 @@
             border-style: solid !important;
         }
 
-        /* MOBILE ADJUSTMENTS */
+        /* MOBILE ADJUSTMENTS (SOLAPAMIENTO ARREGLADO) */
         @media (max-width: 768px) {
-            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
-            .reveal-ui { padding: 12vh 8vw 2vh 8vw; margin: 0 auto; text-align: center; } /* Menos padding abajo */
-            #reveal-masked-layer { justify-content: center; align-items: flex-start; padding-right: 0; padding-top: 2vh; } /* Sube la imagen */
-            .reveal-book-wrapper { max-width: 250px; }
-            .chapter-mark { top: 20px; left: 20px; z-index: 20;}
+            .reveal-segment { display: block; position: relative; }
+            .reveal-ui { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
+            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 25vh; padding-right: 0; }
+            .reveal-book-wrapper { max-width: 220px; }
             
-            /* Fuerza las 3 líneas exactas en móvil */
+            .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.2rem; padding: 0 5vw; line-height: 1.5; }
         }
     </style>
@@ -212,7 +223,7 @@
         <div id="text-container"><span id="dynamic-text"></span></div>
         <div id="logo-container">
             <img src="logo.png" alt="Cuaderno Azul" onerror="this.style.opacity='0'">
-            </div>
+        </div>
     </div>
 
     <div id="physics-bg"></div>
@@ -242,7 +253,7 @@
             <div class="chapter-mark" style="color: #666; z-index: 20;">C. MATERIA</div>
             
             <div class="reveal-ui">
-                <h2>El libro también existe<br>fuera de la pantalla.<span>Cuaderno Azul</span></h2>
+                <h2>El libro también existe<br>fuera de la pantalla.</h2>
                 <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
@@ -250,9 +261,13 @@
             <div id="reveal-masked-layer">
                 <div class="reveal-book-wrapper"></div>
             </div>
+
+            <div class="scroll-down-btn" onclick="document.getElementById('section-premio').scrollIntoView({behavior: 'smooth'})">
+                ↓ SEGUIR LEYENDO ↓
+            </div>
         </section>
 
-        <section class="segment award-segment">
+        <section class="segment award-segment" id="section-premio">
             <div class="chapter-mark" style="color: #666;">D. RECONOCIMIENTO</div>
             <p style="font-size: 0.7rem; border: 1px solid #fff; padding: 4px 12px; display: inline-block; letter-spacing: 2px;">GANADOR</p>
             
@@ -325,7 +340,6 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE POEMAS ---
         const poemasArchivo = [
             "Se ha producido un error, Daniel. / Te has alejado demasiado.",
             "Debo ser el animal que solo piensa en el presente.",
@@ -429,7 +443,7 @@
             "Mis mejores versos los hago en tus labios."
         ];
 
-        // --- 01. MATRIX LOADER (MÁS PEQUEÑO Y COMPACTO) ---
+        // --- 01. MATRIX LOADER ---
         const textContainer = document.getElementById('dynamic-text');
         const charsPool = "abcdefghijklmnopqrstuvwxyz ";
         let charCount = 3000;
@@ -441,8 +455,7 @@
         let currentRow = -1;
 
         function updateCharCount() {
-            // Ajustado matemáticamente para font-size 0.9rem y letter-spacing -1px
-            cols = Math.floor(window.innerWidth / 8);
+            cols = Math.floor(window.innerWidth / 7.5);
             rows = Math.floor(window.innerHeight / 20);
             charCount = Math.floor(cols * rows * 1.1); 
         }
@@ -593,7 +606,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN (BLOQUEO DE SCROLL TÁCTIL) ---
+        // --- 04. REVELACIÓN ---
         const interactionLayer = document.getElementById('reveal-interaction-layer');
         const maskedLayer = document.getElementById('reveal-masked-layer');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
@@ -628,8 +641,7 @@
         });
 
         interactionLayer.addEventListener('touchmove', (e) => {
-            // ESTO PREVIENE EL SCROLL ACCIDENTAL EN MÓVILES MIENTRAS USAS LA LINTERNA
-            e.preventDefault(); 
+            e.preventDefault(); // EVITA QUE EL USUARIO HAGA SCROLL ACCIDENTAL AL USAR LA LINTERNA EN MÓVIL
             const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
         }, {passive: false});
