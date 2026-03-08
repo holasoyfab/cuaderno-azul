@@ -24,6 +24,7 @@
         /* --- UX: SCROLL MAGNÉTICO (RESISTENCIA) --- */
         html {
             scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
         }
 
         body, html {
@@ -32,8 +33,19 @@
             background-color: var(--bg-color); 
             color: var(--text-main);
             overflow-x: hidden;
-            scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- BLOQUEO DE ARRASTRE PARA PROTECCIÓN DE IMÁGENES --- */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: auto;
         }
 
         /* --- 01. LOADER / MATRIX --- */
@@ -117,7 +129,7 @@
         #oracle-key { cursor: grab; touch-action: none; z-index: 100; background: white; }
         #oracle-briefcase { border-style: dashed; }
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
-        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
+        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center; white-space: pre-wrap;}
 
         /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
@@ -204,7 +216,7 @@
         
         /* Lupa y Modal de Imagen */
         .card-img-container { flex: 0 0 40%; max-width: 350px; position: relative; cursor: zoom-in; }
-        .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
+        .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; pointer-events: none;}
         .zoom-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(246, 245, 242, 0.6); display: flex; justify-content: center; align-items: center;
@@ -252,7 +264,7 @@
         .award-title { font-weight: 300; margin: 20px 0; font-size: 1.1rem; line-height: 1.6; z-index: 20; position: relative; }
         
         .burst-container { width: 100%; height: 300px; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 20px;}
-        .award-logo-img { width: 180px; z-index: 15; filter: brightness(0) invert(1); }
+        .award-logo-img { width: 180px; z-index: 15; filter: brightness(0) invert(1); pointer-events: none;}
         .radiating-text { position: absolute; color: #444; font-size: 0.8rem; white-space: nowrap; pointer-events: none; text-transform: uppercase; }
 
         /* --- BOTONES --- */
@@ -260,6 +272,7 @@
             display: inline-block; padding: 12px 30px; border: 1px solid var(--text-main);
             color: var(--text-main); text-decoration: none; font-size: 0.7rem;
             letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; pointer-events: auto; cursor: pointer;
+            background: transparent;
         }
         .btn-minimal:hover { background: var(--text-main); color: var(--bg-color); }
         
@@ -269,11 +282,18 @@
         }
         .btn-typewriter:hover { background: white; color: var(--bg-dark); border-style: solid !important; }
 
-        /* MOBILE ADJUSTMENTS (CORRECCIÓN DE SOLAPAMIENTOS) */
+        /* ANIMACIÓN TEXTO FINAL */
+        .final-text-fade { transition: opacity 1s ease; }
+        .final-text-new { 
+            opacity: 0; display: none; font-size: 1.5rem; 
+            font-style: italic; transition: opacity 2s ease; margin-bottom: 30px;
+        }
+
+        /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
             .reveal-segment { display: flex; flex-direction: column; text-align: center; justify-content: center; gap: 5vh; padding: 10vh 5vw !important; }
-            .reveal-ui { position: relative; top: auto; left: auto; transform: none; width: 100%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto; }
+            .reveal-ui { position: relative; top: auto; left: auto; transform: none; width: 100%; text-align: center; padding: 0; margin: 0; z-index: 10; order: 1;} 
+            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto; order: 2;}
             .reveal-book-wrapper { max-width: 100%; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
@@ -289,7 +309,7 @@
         }
     </style>
 </head>
-<body class="scroll-locked" id="top-page">
+<body class="scroll-locked" id="top-page" oncontextmenu="return false;">
 
     <div id="loader-wrapper">
         <div id="text-container"><span id="dynamic-text"></span></div>
@@ -401,12 +421,18 @@
         </div>
 
         <section class="segment">
-            <p style="opacity: 0.4;">El final siempre es el correcto.</p>
-            <a href="#top-page" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</a>
+            <p id="final-txt-1" class="final-text-fade" style="opacity: 0.4;">El final siempre es el correcto.</p>
+            <p id="final-txt-2" class="final-text-new">El comienzo eres tú.</p>
+            <button id="btn-volver" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</button>
         </section>
     </div>
 
     <script>
+        // --- PROTECCIÓN EXTRA CONTRA ARRASTRE DE IMÁGENES ---
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('dragstart', (e) => e.preventDefault());
+        });
+
         // --- 00. ACORDEÓN HERO ---
         const heroPhrases = [
             "Quizás has llegado hasta aquí y no sabes dónde estás. Te lo contamos.",
@@ -627,7 +653,7 @@
                 key.style.display = 'none'; box.innerHTML = "—";
                 
                 let item = oraclePoems[Math.floor(Math.random() * oraclePoems.length)];
-                let plainTxt = item.text + " — Letra " + item.letter;
+                let plainTxt = item.text + "\n\n- Letra " + item.letter;
                 
                 verseText.innerHTML = "";
                 let i = 0;
@@ -645,7 +671,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN (CONFINADA Y LIBRE DE SCROLL) ---
+        // --- 04. REVELACIÓN CONFINADA ---
         const bookZone = document.getElementById('reveal-container');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
@@ -684,7 +710,7 @@
             bookZone.style.setProperty('--my', `-100%`);
         });
 
-        // Bloqueo táctil AHORA SOLO OCURRE dentro de la caja del libro
+        // El preventDefault SÓLO ocurre dentro de la caja del libro
         bookZone.addEventListener('touchmove', (e) => {
             e.preventDefault(); 
             const rect = bookZone.getBoundingClientRect();
@@ -709,42 +735,42 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO ---
+        // --- 06. DIRECTORIO TELEFÓNICO ACTUALIZADO EXACTAMENTE ---
         const directoryData = {
-            '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.png' },
-            'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
-            'B': { artist: 'Mónica Torrejon (PE)', poem: '¿Qué bestia entregarle a la música?', file: '2B. Mónica Torrejon. Torreja. Cuaderno Azul. Poemario.Peru.jpg' },
-            'C': { artist: 'Flor Marin (PE)', poem: 'Te tragaste tu corazón y el mío.', file: '3C. Te tragaste tu corazon. Flor Marin. Lima Peru. Cuaderno Azul. Poemario.jpg' },
-            'D': { artist: 'Cósmico (PE)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg.jpg' },
-            'E': { artist: 'Carla Eráusquin (PE)', poem: '¿Me extrañas? /  Lo necesario para mentirte.', file: '5E. Gris. Me extrañas. Lima Peru Carla Eráusquin. Cuaderno Azul. Poemario..png' },
-            'F': { artist: 'Anthony Bornachot (FR)', poem: '¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?', file: '6F. Literatura fantástica. Paris Francia Anthony Bornachot. Cuaderno Azul. Poemario..jpg' },
-            'G': { artist: 'Edurne Lacunza (ES)', poem: 'Gota a gota, la lluvia se agota.', file: '7G. Gota a gota. Edurne Lacunza. Barcelona. España. Cuaderno Azul. Poemario.jpg' },
-            'H': { artist: 'Daniela Beracochea (UY)', poem: 'Un hombre en una silla estornuda.', file: '8H. Daniela Beracochea.uruguay.jpg' },
-            'I': { artist: 'José Chang (MX)', poem: 'Los elefantes son infinitos.', file: '9I. José Chang. Los Elefantes Son Infinitos.mexico.jpg' },
-            'J': { artist: 'Jessie Laura (PE)', poem: 'Doblar una esquina y verte / Doblar un verte y llegar a una esquina.', file: '10J. Jessie Laura. Doblar. Peru.Cuaderno Azul Poemario..jpg' },
-            'K': { artist: 'Sandra Travezaño (PE)', poem: 'La sonrisa es el aplauso de la magia.', file: '11K. La sonrisa. Sandra Travezaño. Lima Peru Cuaderno Azul. Poemario..jpg' },
-            'L': { artist: 'Carla Montalvo (PE)', poem: 'Yo he llorado el humo de mis cigarros.', file: '12L. Yo he llorado el humo de mis cigarros. Carla Montalvo. Lima PeruCuaderno Azul. Poemario.jpg' },
-            'M': { artist: 'Ismael Angeles (MX)', poem: 'Here comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF..jpg' },
-            'N': { artist: 'Bolo Torres (EC)', poem: 'No diré tu nombre (...) ... (...)', file: '14N. Bolo Torres. Guayaquil. Ecuador.jpg' },
-            'O': { artist: 'Vanessa Alexandre (BR)', poem: 'Cierra los ojos / ¿Qué es lo más lejos que ves? / Ya ahi', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario..jpg' },
-            'P': { artist: 'Meri Hernandez (ES)', poem: 'A veces confundo lo que escribo con lo que pienso.', file: '16P. A veces sueño. Meri Hernandez. Barcelona. España. Cuaderno Azul. Poemario..jpg' },
-            'Q': { artist: 'Ber Yuen (PE)', poem: 'Quererte es mi problema, no el tuyo.', file: '17Q. Problema. Ber Yuen.Peru.jpg' },
-            'R': { artist: 'Lourdes Perez Lopez (ES)', poem: 'El miércoles hay reunión del fin del mundo. No te olvides.', file: '18R. Fin del Mundo. Lourdes Perez Lopez. Cuaderno Azul. Poemario.Espana.JPG' },
-            'S': { artist: 'Jose Urbina (CO)', poem: 'No puedo dormir, pero me muero de sueño.', file: '19S. Insommia. Jose Urbina. (A.k.a.Tipohoc). Bogota. Colombia. Cuaderno Azul. Poemario..jpg' },
-            'T': { artist: 'Jerson La Torre (PE)', poem: 'Tú eres tu máquina del tiempo.', file: '20T. Tu eres tu maquina del tiempo. Jerson La Torre.Peru.jpg' },
-            'U': { artist: 'Daniel Mateos (MX)', poem: 'Uno es un uno universal.', file: '21U. Uno es un uno universal. Daniel Mateos.Mexico.jpg' },
-            'V': { artist: 'Andrea Lertora (PE)', poem: 'Desde este momento en ti voy a viajar.', file: '22V. Andrea Lertora. Lima. Peru..jpg' },
-            'W': { artist: 'Dominique Millán (PE)', poem: 'We Are wishes.', file: '23W. Dominique Millán. Lima Peru. Cuaderno Azul. Poemario..jpg' },
-            'X': { artist: 'Marta Casares (ES)', poem: 'Nada de interpretar sueños. Soñar con la muerte es el infinito.', file: '24X. Marta Casares. España..jpg' },
-            'Y': { artist: 'Mucho (PE)', poem: 'Lost in the woods.', file: '25Y. Lost Woods. Mucho. Lima Perú..jpg' },
-            'Z': { artist: 'Elian Tuya (PE)', poem: 'Yo seguiré siendo la misma loca, la misma zurda por ambas manos.', file: '26Z. Elian Tuya. Lima. Peru. Cuaderno Azul. Poemario..jpg' },
-            'COL-I': { artist: 'La Koneko (PE)', poem: 'Apareces.', file: '27 Colofón  I. La Koneko. Lima Peru..jpg' },
-            'COL-II': { artist: 'Kapitan Ketchup (PE)', poem: '...', file: '28 Colofón  II. Kapitan Ketchup. Lima. Peru.jpg' },
-            'COL-III': { artist: 'Claudia Prezioso (UY)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay..jpg' },
-            'COL-IV': { artist: 'Irene Fenollar (ES)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España..jpg' },
-            '&': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
-            '#': { artist: 'German Gonzales (AR)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' },
-            '?': { artist: 'El Autor', poem: 'Daniel nació en septiembre de 1988 en Lima, Perú. A los pocos días fue trasladado al consultorio psiquiátrico del Dr. Edmundo Beteta. Allí comenzó a escribir antes de estudiar en la Facultad de Literatura.\n\nPor razones firmamentales terminó graduándose en Antropología Cultural en la PUCP.\n\nNo es su primera vida ni en la Tierra ni fuera de ella. Este es, sin embargo, su primer poemario.', file: 'PERFIL.JPG' }
+            '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.jpg' },
+            'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario-2.jpg' },
+            'B': { artist: 'Mónica Torrejon (PE)', poem: '¿Qué bestia entregarle a la música?', file: '2B. Mónica Torrejon. Torreja. Cuaderno Azul. Poemario.Peru-2.jpg' },
+            'C': { artist: 'Flor Marin (PE)', poem: 'Te tragaste tu corazón y el mío.', file: '3C. Te tragaste tu corazon. Flor Marin. Lima Peru. Cuaderno Azul. Poemario-2.jpg' },
+            'D': { artist: 'Cósmico (PE)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg-2.jpg' },
+            'E': { artist: 'Carla Eráusquin (PE)', poem: '¿Me extrañas? /  Lo necesario para mentirte.', file: '5E. Gris. Me extrañas. Lima Peru Carla Eráusquin. Cuaderno Azul. Poemario..jpg' },
+            'F': { artist: 'Anthony Bornachot (FR)', poem: '¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?', file: '6F. Literatura fantástica. Paris Francia Anthony Bornachot. Cuaderno Azul. Poemario.-2.jpg' },
+            'G': { artist: 'Edurne Lacunza (ES)', poem: 'Gota a gota, la lluvia se agota.', file: '7G. Gota a gota. Edurne Lacunza. Barcelona. España. Cuaderno Azul. Poemario-2.jpg' },
+            'H': { artist: 'Daniela Beracochea (UY)', poem: 'Un hombre en una silla estornuda.', file: '8H. Daniela Beracochea.uruguay-2.jpg' },
+            'I': { artist: 'José Chang (MX)', poem: 'Los elefantes son infinitos.', file: '9I. José Chang. Los Elefantes Son Infinitos.mexico-2.jpg' },
+            'J': { artist: 'Jessie Laura (PE)', poem: 'Doblar una esquina y verte / Doblar un verte y llegar a una esquina.', file: '10J. Jessie Laura. Doblar. Peru.Cuaderno Azul Poemario.-2.jpg' },
+            'K': { artist: 'Sandra Travezaño (PE)', poem: 'La sonrisa es el aplauso de la magia.', file: '11K. La sonrisa. Sandra Travezaño. Lima Peru Cuaderno Azul. Poemario.-2.jpg' },
+            'L': { artist: 'Carla Montalvo (PE)', poem: 'Yo he llorado el humo de mis cigarros.', file: '12L. Yo he llorado el humo de mis cigarros. Carla Montalvo. Lima PeruCuaderno Azul. Poemario-2.jpg' },
+            'M': { artist: 'Ismael Angeles (MX)', poem: 'Here comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF.-2.jpg' },
+            'N': { artist: 'Bolo Torres (EC)', poem: 'No diré tu nombre (...) ... (...)', file: '14N. Bolo Torres. Guayaquil. Ecuador-2.jpg' },
+            'O': { artist: 'Vanessa Alexandre (BR)', poem: 'Cierra los ojos / ¿Qué es lo más lejos que ves? / Ya ahi', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario.-2.jpg' },
+            'P': { artist: 'Meri Hernandez (ES)', poem: 'A veces confundo lo que escribo con lo que pienso.', file: '16P. A veces sueño. Meri Hernandez. Barcelona. España. Cuaderno Azul. Poemario.-2.jpg' },
+            'Q': { artist: 'Ber Yuen (PE)', poem: 'Quererte es mi problema, no el tuyo.', file: '17Q. Problema. Ber Yuen.Peru-2.jpg' },
+            'R': { artist: 'Lourdes Perez Lopez (ES)', poem: 'El miércoles hay reunión del fin del mundo. No te olvides.', file: '18R. Fin del Mundo. Lourdes Perez Lopez. Cuaderno Azul. Poemario.Espana-2.jpg' },
+            'S': { artist: 'Jose Urbina (CO)', poem: 'No puedo dormir, pero me muero de sueño.', file: '19S. Insommia. Jose Urbina. (A.k.a.Tipohoc). Bogota. Colombia. Cuaderno Azul. Poemario.-2.jpg' },
+            'T': { artist: 'Jerson La Torre (PE)', poem: 'Tú eres tu máquina del tiempo.', file: '20T. Tu eres tu maquina del tiempo. Jerson La Torre.Peru-2.jpg' },
+            'U': { artist: 'Daniel Mateos (MX)', poem: 'Uno es un uno universal.', file: '21U. Uno es un uno universal. Daniel Mateos.Mexico-2.jpg' },
+            'V': { artist: 'Andrea Lertora (PE)', poem: 'Desde este momento en ti voy a viajar.', file: '22V. Andrea Lertora. Lima. Peru.-2.jpg' },
+            'W': { artist: 'Dominique Millán (PE)', poem: 'We Are wishes.', file: '23W. Dominique Millán. Lima Peru. Cuaderno Azul. Poemario.-2.jpg' },
+            'X': { artist: 'Marta Casares (ES)', poem: 'Nada de interpretar sueños. Soñar con la muerte es el infinito.', file: '24X. Marta Casares. España.-2.jpg' },
+            'Y': { artist: 'Mucho (PE)', poem: 'Lost in the woods.', file: '25Y. Lost Woods. Mucho. Lima Perú.-2.jpg' },
+            'Z': { artist: 'Elian Tuya (PE)', poem: 'Yo seguiré siendo la misma loca, la misma zurda por ambas manos.', file: '26Z. Elian Tuya. Lima. Peru. Cuaderno Azul. Poemario.-2.jpg' },
+            'COL-I': { artist: 'La Koneko (PE)', poem: 'Apareces.', file: '27 Colofón  I. La Koneko. Lima Peru.-2.jpg' },
+            'COL-II': { artist: 'Kapitan Ketchup (PE)', poem: '...', file: '28 Colofón  II. Kapitan Ketchup. Lima. Peru-2.jpg' },
+            'COL-III': { artist: 'Claudia Prezioso (UY)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay.-2.jpg' },
+            'COL-IV': { artist: 'Irene Fenollar (ES)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España.-2.jpg' },
+            '&': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina.-2.jpg' },
+            '#': { artist: 'German Gonzales (AR)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino-2.jpg' },
+            '?': { artist: 'El Autor', poem: 'Daniel nació en septiembre de 1988 en Lima, Perú. A los pocos días fue trasladado al consultorio psiquiátrico del Dr. Edmundo Beteta. Allí comenzó a escribir antes de estudiar en la Facultad de Literatura.\n\nPor razones firmamentales terminó graduándose en Antropología Cultural en la PUCP.\n\nNo es su primera vida ni en la Tierra ni fuera de ella. Este es, sin embargo, su primer poemario.', file: 'PERFIL-2.jpg' }
         };
 
         let currentDirIndex = 0;
@@ -755,7 +781,6 @@
             const ribbonLeft = document.getElementById('ribbon-left');
             const ribbonRight = document.getElementById('ribbon-right');
             
-            // Navegación de flechas
             ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
             ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
 
@@ -882,7 +907,49 @@
             else setZoom(1);
         }
 
-        // --- ARRANQUE ---
+        // --- ANIMACIÓN BOTÓN FINAL Y ARRANQUE ---
+        const finalBtn = document.getElementById('btn-volver');
+        const finalTxt1 = document.getElementById('final-txt-1');
+        const finalTxt2 = document.getElementById('final-txt-2');
+
+        finalBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            finalTxt1.style.opacity = '0';
+            finalBtn.style.opacity = '0';
+            finalBtn.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                finalTxt1.style.display = 'none';
+                finalTxt2.style.display = 'block';
+                
+                void finalTxt2.offsetWidth; 
+                finalTxt2.style.opacity = '1';
+
+                setTimeout(() => {
+                    // FIX MÁGICO PARA EL SCROLL EN DESKTOP/SAFARI: 
+                    // Apagamos el magnetismo temporalmente, subimos suave, y lo volvemos a encender.
+                    document.documentElement.style.scrollSnapType = 'none';
+                    
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+
+                    // Resetear la sección por si bajan de nuevo
+                    setTimeout(() => {
+                        document.documentElement.style.scrollSnapType = 'y mandatory';
+                        finalTxt2.style.opacity = '0';
+                        setTimeout(() => {
+                            finalTxt2.style.display = 'none';
+                            finalTxt1.style.display = 'block';
+                            finalBtn.style.opacity = '1';
+                            finalBtn.style.pointerEvents = 'auto';
+                            void finalTxt1.offsetWidth;
+                            finalTxt1.style.opacity = '0.4';
+                        }, 500);
+                    }, 1000); 
+                }, 2000); 
+            }, 1000);
+        });
+
         document.getElementById('logo-container').onclick = () => {
             clearInterval(matrixInt);
             document.getElementById('loader-wrapper').style.opacity = '0';
