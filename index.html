@@ -21,6 +21,11 @@
             --border-soft: #d8d6d0;
         }
 
+        /* --- SCROLL MAGNÉTICO (RESISTENCIA) --- */
+        html {
+            scroll-snap-type: y mandatory;
+        }
+
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'IBM Plex Mono', monospace; 
@@ -41,11 +46,12 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             padding: 2vw; box-sizing: border-box; overflow: hidden;
             text-align: justify; word-break: break-all; 
-            font-size: 1.1rem; 
-            line-height: 1.6; 
-            color: rgba(0, 0, 0, 0.35); /* Gris medio de fondo */
-            -webkit-mask-image: radial-gradient(circle at center, transparent 150px, black 160px);
-            mask-image: radial-gradient(circle at center, transparent 150px, black 160px);
+            font-size: 0.9rem; /* Letras más pequeñas */
+            letter-spacing: -1px; /* Interletrado más junto */
+            line-height: 1.5; 
+            color: rgba(0, 0, 0, 0.35); 
+            -webkit-mask-image: radial-gradient(circle at center, transparent 130px, black 150px);
+            mask-image: radial-gradient(circle at center, transparent 130px, black 150px);
         }
         
         .hover-verse { 
@@ -60,7 +66,8 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 10000; cursor: pointer; text-align: center;
         }
-        #logo-container img { width: 220px; }
+        #logo-container img { width: 220px; transition: transform 0.3s ease; }
+        #logo-container:hover img { transform: scale(1.05); }
 
         /* --- 02. FÍSICAS DE ENTRADA --- */
         #physics-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; }
@@ -74,6 +81,8 @@
             justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
             opacity: 0; transform: translateY(40px);
             transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            scroll-snap-align: start; /* Anclaje magnético */
+            scroll-snap-stop: always; /* Obliga a frenar en cada sección */
         }
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
@@ -100,7 +109,7 @@
         
         #reveal-interaction-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair;
+            z-index: 5; cursor: crosshair; touch-action: none; /* Bloquea acciones táctiles nativas aquí */
         }
 
         .reveal-ui { 
@@ -114,7 +123,6 @@
         #reveal-masked-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 2; pointer-events: none;
-            /* REDUCIDO A UNA CUARTA PARTE (12vh en lugar de 35vh) PARA MÁS MISTERIO */
             -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
@@ -159,6 +167,8 @@
 
         /* --- 07. PREMIO MINCUL --- */
         .award-segment { background: var(--bg-dark) !important; color: white; text-align: center; overflow: hidden; }
+        .award-title { font-weight: 300; margin: 20px 0; font-size: 1.1rem; line-height: 1.6; z-index: 20; position: relative; }
+        
         .burst-container { width: 100%; height: 300px; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 20px;}
         .award-logo-img { width: 180px; z-index: 15; filter: brightness(0) invert(1); }
         .radiating-text { position: absolute; color: #444; font-size: 0.8rem; white-space: nowrap; pointer-events: none; text-transform: uppercase; }
@@ -170,15 +180,29 @@
             letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; pointer-events: auto;
         }
         .btn-minimal:hover { background: var(--text-main); color: var(--bg-color); }
-        .btn-light { border-color: white; color: white; margin-top: 20px; }
-        .btn-light:hover { background: white; color: var(--bg-dark); }
+        
+        /* Botón Máquina de escribir (Dashed) */
+        .btn-typewriter { 
+            border: 1px dashed rgba(255, 255, 255, 0.6) !important; 
+            color: white; 
+            margin-top: 5px; /* Más pegado al texto superior para separarse de la imagen */
+        }
+        .btn-typewriter:hover { 
+            background: white; 
+            color: var(--bg-dark); 
+            border-style: solid !important;
+        }
 
+        /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
             .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
-            .reveal-ui { padding: 12vh 8vw 5vh 8vw; margin: 0 auto; text-align: center; }
-            #reveal-masked-layer { justify-content: center; align-items: flex-end; padding-right: 0; padding-bottom: 8vh; }
+            .reveal-ui { padding: 12vh 8vw 2vh 8vw; margin: 0 auto; text-align: center; } /* Menos padding abajo */
+            #reveal-masked-layer { justify-content: center; align-items: flex-start; padding-right: 0; padding-top: 2vh; } /* Sube la imagen */
             .reveal-book-wrapper { max-width: 250px; }
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
+            
+            /* Fuerza las 3 líneas exactas en móvil */
+            .award-title { font-size: 1.2rem; padding: 0 5vw; line-height: 1.5; }
         }
     </style>
 </head>
@@ -188,8 +212,7 @@
         <div id="text-container"><span id="dynamic-text"></span></div>
         <div id="logo-container">
             <img src="logo.png" alt="Cuaderno Azul" onerror="this.style.opacity='0'">
-            <p style="font-size: 0.6rem; letter-spacing: 5px; margin-top: 20px; opacity: 0.5; color: #000;">PULSAR PARA ABRIR</p>
-        </div>
+            </div>
     </div>
 
     <div id="physics-bg"></div>
@@ -220,7 +243,7 @@
             
             <div class="reveal-ui">
                 <h2>El libro también existe<br>fuera de la pantalla.<span>Cuaderno Azul</span></h2>
-                <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-light">Reservar ejemplar</a>
+                <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
             <div id="reveal-interaction-layer"></div>
@@ -232,7 +255,13 @@
         <section class="segment award-segment">
             <div class="chapter-mark" style="color: #666;">D. RECONOCIMIENTO</div>
             <p style="font-size: 0.7rem; border: 1px solid #fff; padding: 4px 12px; display: inline-block; letter-spacing: 2px;">GANADOR</p>
-            <h3 style="font-weight: 300; margin: 20px 0; font-size: 1.1rem; line-height: 1.6; z-index: 20; position: relative;">Estímulos Económicos para el Libro<br>y el Fomento de la Lectura 2025</h3>
+            
+            <h3 class="award-title">
+                Estímulos Económicos para el Libro<br>
+                y el Fomento de la Lectura<br>
+                2025
+            </h3>
+            
             <div class="burst-container" id="burst-box">
                 <img src="img/logoinsignia.png" class="award-logo-img" alt="Ministerio de Cultura" onerror="this.style.opacity='0'">
             </div>
@@ -296,6 +325,7 @@
     </div>
 
     <script>
+        // --- BASE DE DATOS DE POEMAS ---
         const poemasArchivo = [
             "Se ha producido un error, Daniel. / Te has alejado demasiado.",
             "Debo ser el animal que solo piensa en el presente.",
@@ -399,7 +429,7 @@
             "Mis mejores versos los hago en tus labios."
         ];
 
-        // --- 01. MATRIX LOADER (MÁS LENTO Y EXACTO) ---
+        // --- 01. MATRIX LOADER (MÁS PEQUEÑO Y COMPACTO) ---
         const textContainer = document.getElementById('dynamic-text');
         const charsPool = "abcdefghijklmnopqrstuvwxyz ";
         let charCount = 3000;
@@ -410,12 +440,11 @@
         let verseTimeout;
         let currentRow = -1;
 
-        // Calcula dimensiones estimadas de caracteres para crear la grilla
         function updateCharCount() {
-            // Un caracter de 1.1rem mide aprox 11px de ancho y 28px de alto
-            cols = Math.floor(window.innerWidth / 11);
-            rows = Math.floor(window.innerHeight / 28);
-            charCount = cols * rows; 
+            // Ajustado matemáticamente para font-size 0.9rem y letter-spacing -1px
+            cols = Math.floor(window.innerWidth / 8);
+            rows = Math.floor(window.innerHeight / 20);
+            charCount = Math.floor(cols * rows * 1.1); 
         }
         updateCharCount();
         window.addEventListener('resize', updateCharCount);
@@ -435,7 +464,6 @@
             }
         }
         
-        // Intervalo más lento (160ms) para que parpadee menos
         let matrixInt = setInterval(updateMatrix, 160);
 
         const loaderWrapper = document.getElementById('loader-wrapper');
@@ -449,18 +477,13 @@
             
             let newRow = Math.floor(percentY * rows);
             
-            // Si cambia de línea o no hay verso activo, saca uno nuevo
             if (newRow !== currentRow || activeVerse === "") {
                 currentRow = newRow;
                 activeVerse = " " + poemasArchivo[Math.floor(Math.random() * poemasArchivo.length)] + " ";
             }
             
-            // Calcula la columna (X) centrando el verso respecto al cursor
             let targetCol = Math.floor(percentX * cols) - Math.floor(activeVerse.length / 2);
-            // Evita que el verso se corte en los bordes izquierdo o derecho
             targetCol = Math.max(0, Math.min(targetCol, cols - activeVerse.length));
-            
-            // Índice final inyectado
             activeVerseIndex = (newRow * cols) + targetCol;
             
             clearTimeout(verseTimeout);
@@ -507,7 +530,7 @@
             });
         }
 
-        // --- 03. ORÁCULO (ARRASTRE EXACTO Y SONIDO DE LLAVE) ---
+        // --- 03. ORÁCULO ---
         const key = document.getElementById('oracle-key');
         const box = document.getElementById('oracle-briefcase');
         const verseText = document.getElementById('oracle-verse-text');
@@ -570,7 +593,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN (POLVO ATMOSFÉRICO + MÁSCARA MÁS PEQUEÑA) ---
+        // --- 04. REVELACIÓN (BLOQUEO DE SCROLL TÁCTIL) ---
         const interactionLayer = document.getElementById('reveal-interaction-layer');
         const maskedLayer = document.getElementById('reveal-masked-layer');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
@@ -605,9 +628,11 @@
         });
 
         interactionLayer.addEventListener('touchmove', (e) => {
+            // ESTO PREVIENE EL SCROLL ACCIDENTAL EN MÓVILES MIENTRAS USAS LA LINTERNA
+            e.preventDefault(); 
             const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: true});
+        }, {passive: false});
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
