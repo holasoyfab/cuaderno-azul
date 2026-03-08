@@ -87,55 +87,24 @@
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
 
-        /* --- ACORDEÓN HERO (TEXTO PROGRESIVO) --- */
+        /* --- ACORDEÓN HERO --- */
         .hero-accordion {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            max-width: 600px;
-            padding: 0 20px;
-            z-index: 20;
+            margin-top: 30px; display: flex; flex-direction: column; align-items: center;
+            gap: 15px; max-width: 600px; padding: 0 20px; z-index: 20;
         }
-        #accordion-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
+        #accordion-content { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .accordion-text {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-light);
-            text-align: center;
-            margin: 0;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: slideFadeIn 0.5s ease forwards;
+            font-size: 0.85rem; line-height: 1.6; color: var(--text-light); text-align: center; margin: 0; 
+            opacity: 0; transform: translateY(-10px); animation: slideFadeIn 0.5s ease forwards;
         }
-        @keyframes slideFadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideFadeIn { to { opacity: 1; transform: translateY(0); } }
+        
         .accordion-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: var(--text-main);
-            color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: 300;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            user-select: none;
-            flex-shrink: 0;
+            width: 35px; height: 35px; border-radius: 50%; background-color: var(--text-main); color: var(--bg-color);
+            display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: 300; 
+            cursor: pointer; transition: all 0.3s ease; user-select: none; flex-shrink: 0;
         }
-        .accordion-btn:hover {
-            transform: scale(1.1);
-        }
+        .accordion-btn:hover { transform: scale(1.1); }
 
         /* --- 04. ORÁCULO --- */
         .oracle-instruction { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 4rem; text-transform: uppercase; text-align: center;}
@@ -153,33 +122,28 @@
         /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
             background-color: var(--bg-deep-blue) !important; 
-            color: white; flex-direction: row; justify-content: flex-start;
+            color: white; flex-direction: row; justify-content: center; gap: 8vw;
             overflow: hidden; padding: 0 !important;
         }
         
-        #reveal-interaction-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair; touch-action: none; 
-        }
-
         .reveal-ui { 
             z-index: 10; text-align: left; max-width: 400px; 
-            padding: 10vh 8vw; position: relative; pointer-events: none;
+            padding: 10vh 0; position: relative; pointer-events: none;
         }
         .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
         .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
         .reveal-ui a { pointer-events: auto; } 
-        
-        #reveal-masked-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2; pointer-events: none;
+
+        #reveal-container {
+            position: relative; width: 100%; max-width: 450px; 
+            display: flex; justify-content: center; align-items: center;
+            padding: 30px; box-sizing: border-box; cursor: crosshair; touch-action: none; 
             -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
         }
 
         .reveal-book-wrapper {
-            width: 100%; max-width: 380px; aspect-ratio: 3/4;
+            width: 100%; max-width: 350px; aspect-ratio: 3/4;
             background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
             box-shadow: 0 0 40px rgba(255,255,255,0.05); 
         }
@@ -190,6 +154,7 @@
             font-size: 0.4rem; color: #c0d0ff; 
             text-shadow: 0 0 3px rgba(192, 208, 255, 0.8);
             animation: floatAmbient 5s ease-in-out forwards;
+            z-index: 2;
         }
         @keyframes floatAmbient {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
@@ -197,16 +162,13 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO --- */
+        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO LÚDICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
-        .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
+        .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; margin-bottom: 20px;}
         
-        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; margin-top: 20px;}
+        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; }
         
-        /* Contenedor de Pestañas con Flechas Sutiles */
-        .ribbon-wrapper {
-            display: flex; align-items: center; width: 100%; margin-bottom: 30px; border-bottom: 2px solid var(--text-main);
-        }
+        .ribbon-wrapper { display: flex; align-items: center; width: 100%; margin-bottom: 30px; border-bottom: 2px solid var(--text-main); }
         .ribbon-arrow {
             background: none; border: none; font-size: 1.8rem; color: var(--text-light); 
             cursor: pointer; padding: 0 10px; z-index: 10; outline: none; transition: color 0.3s;
@@ -257,7 +219,7 @@
         }
         .image-modal.show { display: flex; opacity: 1; }
         .image-modal img { max-width: 95%; max-height: 90vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid var(--border-soft); }
-
+        
         .card-info { flex: 1; text-align: left; position: relative; }
         .card-letter-bg { font-size: 5rem; font-weight: 300; color: var(--bg-color); position: absolute; top: -40px; left: -15px; z-index: 0; pointer-events: none;}
         .card-artist { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; position: relative; z-index: 1;}
@@ -275,28 +237,22 @@
         .btn-minimal {
             display: inline-block; padding: 12px 30px; border: 1px solid var(--text-main);
             color: var(--text-main); text-decoration: none; font-size: 0.7rem;
-            letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; pointer-events: auto;
+            letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; pointer-events: auto; cursor: pointer;
         }
         .btn-minimal:hover { background: var(--text-main); color: var(--bg-color); }
         
         .btn-typewriter { 
             border: 1px dashed rgba(255, 255, 255, 0.6) !important; 
-            color: white; 
-            margin-top: 15px; 
-            background: transparent;
+            color: white; margin-top: 15px; background: transparent;
         }
-        .btn-typewriter:hover { 
-            background: white; 
-            color: var(--bg-dark); 
-            border-style: solid !important;
-        }
+        .btn-typewriter:hover { background: white; color: var(--bg-dark); border-style: solid !important; }
 
         /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .reveal-segment { display: block; position: relative; }
-            .reveal-ui { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 25vh; padding-right: 0; }
-            .reveal-book-wrapper { max-width: 220px; }
+            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
+            .reveal-ui { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
+            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto 10vh auto; }
+            .reveal-book-wrapper { max-width: 100%; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.15rem; padding: 0 5vw; line-height: 1.5; }
@@ -311,7 +267,7 @@
         }
     </style>
 </head>
-<body class="scroll-locked">
+<body class="scroll-locked" id="top-page">
 
     <div id="loader-wrapper">
         <div id="text-container"><span id="dynamic-text"></span></div>
@@ -356,8 +312,7 @@
                 <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
-            <div id="reveal-interaction-layer"></div>
-            <div id="reveal-masked-layer">
+            <div id="reveal-container">
                 <div class="reveal-book-wrapper"></div>
             </div>
         </section>
@@ -402,6 +357,8 @@
                         <div class="card-letter-bg" id="cv-letter-bg"></div>
                         <div class="card-artist" id="cv-artist"></div>
                         <div class="card-poem" id="cv-poem"></div>
+                        
+                        <a href="mailto:azul.cuaderno@gmail.com?subject=Propuesta de Ilustración - Cuaderno Azul&body=Hola! Me gustaría enviar una propuesta para ilustrar un verso..." class="btn-minimal" style="margin-top: 20px; font-size: 0.65rem;">ILUSTRA AQUÍ</a>
                     </div>
                 </div>
             </div>
@@ -413,7 +370,7 @@
 
         <section class="segment">
             <p style="opacity: 0.4;">El final siempre es el correcto.</p>
-            <a href="#" onclick="window.scrollTo(0,0); return false;" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</a>
+            <a href="#top-page" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</a>
         </section>
     </div>
 
@@ -494,7 +451,7 @@
             "Yo solo escucho lo que tú dices.",
             "Deberías estar a este lado del sol.",
             "Yo olvido más de lo que escribo.",
-            "El futuro es la gran promesa que lo justifica todo.",
+            "El futuro es la gran promise que lo justifica todo.",
             "El pensamiento es la forma y el cuerpo el escenario.",
             "El mar cumple una función filosófica.",
             "Esperar es una forma de disciplinarnos.",
@@ -584,7 +541,6 @@
         }
         
         let matrixInt = setInterval(updateMatrix, 160);
-
         const loaderWrapper = document.getElementById('loader-wrapper');
         
         function handleInteraction(e) {
@@ -709,43 +665,49 @@
         });
 
         // --- 04. REVELACIÓN ---
-        const interactionLayer = document.getElementById('reveal-interaction-layer');
-        const maskedLayer = document.getElementById('reveal-masked-layer');
+        const bookZone = document.getElementById('reveal-container');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
         setInterval(() => {
-            if (maskedLayer.style.getPropertyValue('--mx') === '') return;
+            if (bookZone.style.getPropertyValue('--mx') === '') return;
             
-            const char = charsArr[Math.floor(Math.random() * charsArr.length)];
-            const el = document.createElement('div');
-            el.className = 'ambient-dust';
-            el.innerText = char;
-            
-            el.style.left = `${Math.random() * 100}%`; 
-            el.style.top = `${Math.random() * 100}%`;
-            
-            el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
-            
-            maskedLayer.appendChild(el);
-            setTimeout(() => el.remove(), 4500); 
-        }, 100);
+            for(let i = 0; i < 3; i++) { 
+                const char = charsArr[Math.floor(Math.random() * charsArr.length)];
+                const el = document.createElement('div');
+                el.className = 'ambient-dust';
+                el.innerText = char;
+                
+                el.style.left = `${Math.random() * 100}%`; 
+                el.style.top = `${Math.random() * 100}%`;
+                el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
+                
+                bookZone.appendChild(el);
+                setTimeout(() => el.remove(), 3000); 
+            }
+        }, 80);
 
         function updateFlashlight(x, y) {
-            maskedLayer.style.setProperty('--mx', `${x}px`);
-            maskedLayer.style.setProperty('--my', `${y}px`);
+            bookZone.style.setProperty('--mx', `${x}px`);
+            bookZone.style.setProperty('--my', `${y}px`);
         }
 
-        interactionLayer.addEventListener('mousemove', (e) => {
-            const rect = interactionLayer.getBoundingClientRect();
+        bookZone.addEventListener('mousemove', (e) => {
+            const rect = bookZone.getBoundingClientRect();
             updateFlashlight(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        interactionLayer.addEventListener('touchmove', (e) => {
-            const rect = interactionLayer.getBoundingClientRect();
+        bookZone.addEventListener('mouseleave', () => {
+            bookZone.style.setProperty('--mx', `-100%`);
+            bookZone.style.setProperty('--my', `-100%`);
+        });
+
+        bookZone.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            const rect = bookZone.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: true});
+        }, {passive: false});
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -765,7 +727,7 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO ---
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO AND ISO UPDATES ---
         const directoryData = {
             '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.png' },
             'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
@@ -780,9 +742,9 @@
             'J': { artist: 'Jessie Laura (PE)', poem: 'Doblar una esquina y verte / Doblar un verte y llegar a una esquina.', file: '10J. Jessie Laura. Doblar. Peru.Cuaderno Azul Poemario..jpg' },
             'K': { artist: 'Sandra Travezaño (PE)', poem: 'La sonrisa es el aplauso de la magia.', file: '11K. La sonrisa. Sandra Travezaño. Lima Peru Cuaderno Azul. Poemario..jpg' },
             'L': { artist: 'Carla Montalvo (PE)', poem: 'Yo he llorado el humo de mis cigarros.', file: '12L. Yo he llorado el humo de mis cigarros. Carla Montalvo. Lima PeruCuaderno Azul. Poemario.jpg' },
-            'M': { artist: 'Ismael Angeles (MX)', poem: 'Here Comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF..jpg' },
+            'M': { artist: 'Ismael Angeles (MX)', poem: 'Here comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF..jpg' },
             'N': { artist: 'Bolo Torres (EC)', poem: 'No diré tu nombre (...) ... (...)', file: '14N. Bolo Torres. Guayaquil. Ecuador.jpg' },
-            'O': { artist: 'Vanessa Alexandre (BR)', poem: 'Cierra los ojos. ¿Qué es lo más lejos que ves ya ahí?', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario..jpg' },
+            'O': { artist: 'Vanessa Alexandre (BR)', poem: 'Cierra los ojos / ¿Qué es lo más lejos que ves? / Ya ahi', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario..jpg' },
             'P': { artist: 'Meri Hernandez (ES)', poem: 'A veces confundo lo que escribo con lo que pienso.', file: '16P. A veces sueño. Meri Hernandez. Barcelona. España. Cuaderno Azul. Poemario..jpg' },
             'Q': { artist: 'Ber Yuen (PE)', poem: 'Quererte es mi problema, no el tuyo.', file: '17Q. Problema. Ber Yuen.Peru.jpg' },
             'R': { artist: 'Lourdes Perez Lopez (ES)', poem: 'El miércoles hay reunión del fin del mundo. No te olvides.', file: '18R. Fin del Mundo. Lourdes Perez Lopez. Cuaderno Azul. Poemario.Espana.JPG' },
@@ -799,7 +761,7 @@
             'COL-III': { artist: 'Claudia Prezioso (UY)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay..jpg' },
             'COL-IV': { artist: 'Irene Fenollar (ES)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España..jpg' },
             '31V': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
-            '32F': { artist: 'German Gonzales (AR)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' },
+            { text: "Tú nunca te molestarías conmigo. Nunca.", letter: "32F" },
             '?': { artist: 'El Autor', poem: 'Daniel nació en septiembre de 1988 en Lima, Perú. A los pocos días fue trasladado al consultorio psiquiátrico del Dr. Edmundo Beteta. Allí comenzó a escribir antes de estudiar en la Facultad de Literatura.\n\nPor razones firmamentales terminó graduándose en Antropología Cultural en la PUCP.\n\nNo es su primera vida ni en la Tierra ni fuera de ella. Este es, sin embargo, su primer poemario.', file: 'PERFIL.JPG' }
         };
 
@@ -811,6 +773,7 @@
             const ribbonLeft = document.getElementById('ribbon-left');
             const ribbonRight = document.getElementById('ribbon-right');
             
+            // Arrow navigation
             ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
             ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
 
