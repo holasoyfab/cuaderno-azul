@@ -129,33 +129,40 @@
         #oracle-key { cursor: grab; touch-action: none; z-index: 100; background: white; }
         #oracle-briefcase { border-style: dashed; }
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
-        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center; white-space: pre-wrap;}
+        
+        /* Contenedor centralizado para el poema del Oráculo */
+        #oracle-verse-container { 
+            margin: 4rem auto 0; min-height: 120px; width: 100%; max-width: 600px; 
+            text-align: center; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
+        }
+        .oracle-line-1 { font-style: italic; font-size: 1.3rem; line-height: 1.6; white-space: pre-wrap;}
+        .oracle-line-2 { font-size: 0.9rem; margin-top: 15px; letter-spacing: 1px; color: var(--text-light); opacity: 0; transition: opacity 0.5s ease; }
 
-        /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
+        /* --- 05. REVELACIÓN (LINTERNA CONFINADA, ESTRUCTURA SÓLIDA) --- */
         .reveal-segment { 
             background-color: var(--bg-deep-blue) !important; 
-            color: white; flex-direction: row; justify-content: center; gap: 8vw;
+            color: white; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8vw;
             overflow: hidden; padding: 0 !important;
         }
         
         .reveal-ui { 
-            z-index: 10; text-align: left; max-width: 400px; 
-            padding: 10vh 0; position: relative; pointer-events: none;
+            z-index: 10; text-align: left; max-width: 400px; position: relative; pointer-events: none;
         }
-        .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
+        .reveal-ui h2 { font-weight: 300; font-size: 1.1rem; color: #8892b0; line-height: 1.5; margin: 0; }
         .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
         .reveal-ui a { pointer-events: auto; } 
 
         #reveal-container {
-            position: relative; width: 100%; max-width: 450px; 
+            position: relative; width: 100%; max-width: 380px; 
             display: flex; justify-content: center; align-items: center;
-            padding: 30px; box-sizing: border-box; cursor: crosshair; touch-action: none; 
-            -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
+            padding: 20px; box-sizing: border-box; cursor: crosshair; touch-action: none; 
+            -webkit-mask-image: radial-gradient(circle 120px at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
+            mask-image: radial-gradient(circle 120px at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
         }
 
         .reveal-book-wrapper {
-            width: 100%; max-width: 350px; aspect-ratio: 3/4;
+            width: 100%; max-width: 320px; aspect-ratio: 3/4;
             background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
             box-shadow: 0 0 40px rgba(255,255,255,0.05); 
         }
@@ -174,7 +181,7 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO LÚDICO --- */
+        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; margin-bottom: 20px;}
         
@@ -283,15 +290,15 @@
         .btn-typewriter:hover { background: white; color: var(--bg-dark); border-style: solid !important; }
 
         /* ANIMACIÓN TEXTO FINAL */
-        .final-text-fade { transition: opacity 1s ease; }
+        .final-text-fade { transition: opacity 1s ease; margin-bottom: 20px;}
         .final-text-new { 
             opacity: 0; display: none; font-size: 1.5rem; 
             font-style: italic; transition: opacity 2s ease; margin-bottom: 30px;
         }
 
-        /* MOBILE ADJUSTMENTS */
+        /* MOBILE ADJUSTMENTS (DISEÑO BLINDADO PARA EVITAR SOLAPAMIENTOS) */
         @media (max-width: 768px) {
-            .reveal-segment { display: flex; flex-direction: column; text-align: center; justify-content: center; gap: 5vh; padding: 10vh 5vw !important; }
+            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; gap: 5vh; padding: 10vh 5vw !important; }
             .reveal-ui { position: relative; top: auto; left: auto; transform: none; width: 100%; text-align: center; padding: 0; margin: 0; z-index: 10; order: 1;} 
             #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto; order: 2;}
             .reveal-book-wrapper { max-width: 100%; }
@@ -309,7 +316,9 @@
         }
     </style>
 </head>
-<body class="scroll-locked" id="top-page" oncontextmenu="return false;">
+<body class="scroll-locked" oncontextmenu="return false;">
+
+    <div id="inicio-absoluto" style="position: absolute; top: 0; left: 0;"></div>
 
     <div id="loader-wrapper">
         <div id="text-container"><span id="dynamic-text"></span></div>
@@ -321,7 +330,7 @@
     <div id="physics-bg"></div>
 
     <div id="main-content">
-        <section class="segment">
+        <section class="segment" id="seccion-a">
             <div class="chapter-mark">A. ARCHIVO</div>
             <h1 style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; margin: 0; text-align: center;">Cuaderno Azul</h1>
             <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem; text-align: center; padding: 0 20px; margin-bottom: 0;">DIRECTORIO DE VERSOS (2008-2026)</p>
@@ -341,7 +350,8 @@
                     <div id="oracle-briefcase" class="ritual-item">⎔</div>
                 </div>
                 <div id="oracle-verse-container">
-                    <span id="oracle-verse-text"></span>
+                    <div id="oracle-line-1" class="oracle-line-1"></div>
+                    <div id="oracle-line-2" class="oracle-line-2"></div>
                 </div>
             </div>
         </section>
@@ -423,11 +433,18 @@
         <section class="segment">
             <p id="final-txt-1" class="final-text-fade" style="opacity: 0.4;">El final siempre es el correcto.</p>
             <p id="final-txt-2" class="final-text-new">El comienzo eres tú.</p>
-            <button id="btn-volver" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</button>
+            <button id="btn-volver" class="btn-minimal">Volver al comienzo</button>
         </section>
     </div>
 
     <script>
+        // --- FEEDBACK HÁPTICO (Vibraciones sutiles) ---
+        function haptic(pattern) {
+            if (navigator.vibrate) {
+                try { navigator.vibrate(pattern); } catch(e) {}
+            }
+        }
+
         // --- PROTECCIÓN EXTRA CONTRA ARRASTRE DE IMÁGENES ---
         document.querySelectorAll('img').forEach(img => {
             img.addEventListener('dragstart', (e) => e.preventDefault());
@@ -447,6 +464,7 @@
         const accordionContent = document.getElementById('accordion-content');
 
         accordionBtn.addEventListener('click', () => {
+            haptic(15); 
             if (accordionIndex < heroPhrases.length) {
                 const p = document.createElement('p');
                 p.className = 'accordion-text';
@@ -460,7 +478,7 @@
             }
         });
 
-        // --- BASE DE DATOS DE POEMAS DEL ORÁCULO (Mapeados con Letra) ---
+        // --- BASE DE DATOS DE POEMAS DEL ORÁCULO ---
         const oraclePoems = [
             { text: "El amor es mitad dolor / ¿y la otra mitad? / tú.", letter: "A" },
             { text: "¿Qué bestia entregarle a la música?", letter: "B" },
@@ -494,7 +512,6 @@
             { text: "Tú nunca te molestarías conmigo. Nunca.", letter: "#" }
         ];
 
-        // Matriz base (Solo para el loader del inicio)
         const poemasArchivo = oraclePoems.map(p => p.text).concat([
             "Mi arte es existir.", "Bailar siempre trae consecuencias.", "No puede haber conciencia en una máquina no biológica.",
             "Busco un barco que sepa naufragar.", "Jamás se formó ciudadanía, se formó mano de obra.",
@@ -583,7 +600,7 @@
         loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
         loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
-        // --- 02. FÍSICAS (SOLO LETRAS) ---
+        // --- 02. FÍSICAS ---
         const { Engine, Runner, Bodies, Composite, Events } = Matter;
         const engine = Engine.create();
         function initPhysics() {
@@ -618,7 +635,8 @@
         // --- 03. ORÁCULO ---
         const key = document.getElementById('oracle-key');
         const box = document.getElementById('oracle-briefcase');
-        const verseText = document.getElementById('oracle-verse-text');
+        const line1 = document.getElementById('oracle-line-1');
+        const line2 = document.getElementById('oracle-line-2');
         
         let isDragging = false;
         let startX = 0, startY = 0;
@@ -630,6 +648,7 @@
             startX = e.clientX - currentX;
             startY = e.clientY - currentY;
             key.style.transition = 'none';
+            haptic(15); 
         });
 
         key.addEventListener('pointermove', (e) => {
@@ -651,20 +670,34 @@
             
             if(box.classList.contains('proximity')) {
                 key.style.display = 'none'; box.innerHTML = "—";
+                haptic([30, 40, 30]); 
                 
                 let item = oraclePoems[Math.floor(Math.random() * oraclePoems.length)];
-                let plainTxt = item.text + "\n\n- Letra " + item.letter;
+                let txt1 = item.text;
+                let txt2 = "- Letra " + item.letter;
                 
-                verseText.innerHTML = "";
+                line1.textContent = "";
+                line2.textContent = "";
+                line2.style.opacity = "0";
+
                 let i = 0;
-                const type = () => { 
-                    if(i < plainTxt.length) { 
-                        verseText.innerHTML += plainTxt.charAt(i); 
+                let currentStr = "";
+                
+                // FIXED BUG: Usar textContent y una variable interna asegura que no se pierdan los espacios
+                const typeVerse = () => { 
+                    if(i < txt1.length) { 
+                        currentStr += txt1.charAt(i);
+                        line1.textContent = currentStr; 
                         i++; 
-                        setTimeout(type, 35); 
+                        setTimeout(typeVerse, 35); 
+                    } else {
+                        setTimeout(() => {
+                            line2.textContent = txt2;
+                            line2.style.opacity = "1";
+                        }, 200);
                     }
                 };
-                type();
+                typeVerse();
             } else {
                 currentX = 0; currentY = 0;
                 key.style.transform = `translate(0px, 0px)`;
@@ -735,7 +768,7 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO ACTUALIZADO EXACTAMENTE ---
+        // --- 06. DIRECTORIO TELEFÓNICO EXACTO ---
         const directoryData = {
             '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.jpg' },
             'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario-2.jpg' },
@@ -781,8 +814,8 @@
             const ribbonLeft = document.getElementById('ribbon-left');
             const ribbonRight = document.getElementById('ribbon-right');
             
-            ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
-            ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
+            ribbonLeft.onclick = () => { haptic(10); ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
+            ribbonRight.onclick = () => { haptic(10); ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
 
             dirKeys.forEach((key, index) => {
                 let div = document.createElement('div');
@@ -829,6 +862,8 @@
             currentDirIndex = index;
             const key = dirKeys[index];
 
+            haptic(15);
+
             document.querySelectorAll('.alpha-letter').forEach(el => el.classList.remove('active'));
             const activeTab = document.getElementById('tab-' + index);
             activeTab.classList.add('active');
@@ -857,6 +892,7 @@
         let currentZoom = 1;
 
         function openImageModal() {
+            haptic(20);
             const imgSrc = document.getElementById('cv-img').src;
             const modal = document.getElementById('image-modal');
             document.getElementById('modal-hi-res-img').src = imgSrc;
@@ -867,6 +903,7 @@
         }
 
         function closeImageModal() {
+            haptic(15);
             const modal = document.getElementById('image-modal');
             modal.classList.remove('show');
             document.documentElement.style.overflow = '';
@@ -875,6 +912,7 @@
 
         function setZoom(level) {
             currentZoom = level;
+            if(level !== 1) haptic(10);
             
             document.querySelectorAll('.zoom-controls button').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-z' + level).classList.add('active');
@@ -907,13 +945,14 @@
             else setZoom(1);
         }
 
-        // --- ANIMACIÓN BOTÓN FINAL Y ARRANQUE ---
+        // --- ANIMACIÓN BOTÓN FINAL Y FIX DE SCROLL ---
         const finalBtn = document.getElementById('btn-volver');
         const finalTxt1 = document.getElementById('final-txt-1');
         const finalTxt2 = document.getElementById('final-txt-2');
 
         finalBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            haptic(40); 
             
             finalTxt1.style.opacity = '0';
             finalBtn.style.opacity = '0';
@@ -922,20 +961,19 @@
             setTimeout(() => {
                 finalTxt1.style.display = 'none';
                 finalTxt2.style.display = 'block';
-                
                 void finalTxt2.offsetWidth; 
                 finalTxt2.style.opacity = '1';
 
                 setTimeout(() => {
-                    // FIX MÁGICO PARA EL SCROLL EN DESKTOP/SAFARI: 
-                    // Apagamos el magnetismo temporalmente, subimos suave, y lo volvemos a encender.
+                    // FIX DEFINITIVO: Apagamos el imán, apuntamos al ID de inicio y le damos tiempo
                     document.documentElement.style.scrollSnapType = 'none';
+                    document.body.style.scrollSnapType = 'none';
                     
-                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    document.getElementById('inicio-absoluto').scrollIntoView({behavior: 'smooth', block: 'start'});
 
-                    // Resetear la sección por si bajan de nuevo
                     setTimeout(() => {
                         document.documentElement.style.scrollSnapType = 'y mandatory';
+                        
                         finalTxt2.style.opacity = '0';
                         setTimeout(() => {
                             finalTxt2.style.display = 'none';
@@ -945,12 +983,13 @@
                             void finalTxt1.offsetWidth;
                             finalTxt1.style.opacity = '0.4';
                         }, 500);
-                    }, 1000); 
+                    }, 2500); 
                 }, 2000); 
             }, 1000);
         });
 
         document.getElementById('logo-container').onclick = () => {
+            haptic([20, 30, 20]);
             clearInterval(matrixInt);
             document.getElementById('loader-wrapper').style.opacity = '0';
             
