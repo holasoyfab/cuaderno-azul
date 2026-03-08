@@ -3,206 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Poemario - El Cuaderno Azul</title>
+    <title>Cuaderno Azul — Dispositivo Poético</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <style>
-        /* --- 00. ESTILOS BASE Y MUSEUM-GRADE --- */
         :root {
             --bg-color: #f6f5f2;
+            --bg-dark: #05070a;
+            --bg-deep-blue: #030815;
             --text-main: #1a1a1a;
-            --text-light: #555555;
+            --text-light: #757575;
             --border-soft: #d8d6d0;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            font-family: 'Cutive Mono', monospace; 
+            font-family: 'IBM Plex Mono', monospace; 
             background-color: var(--bg-color); 
             color: var(--text-main);
             overflow-x: hidden;
             scroll-behavior: smooth;
-        }
-        
-        button, a, span, div, h2, p { font-family: inherit; }
-
-        /* Textura global de ruido de papel */
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 9998;
-        }
-        body.scroll-locked { overflow: hidden; overscroll-behavior: none; }
-
-        /* Marcadores Conceptuales (A, B, C...) */
-        .chapter-mark {
-            position: absolute; top: 4vh; left: 5vw;
-            font-size: 1rem; color: var(--text-light);
-            letter-spacing: 2px; opacity: 0.6; z-index: 30;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- 01. LOADER MATRIX --- */
+        /* --- 01. LOADER / MATRIX --- */
         #loader-wrapper {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            z-index: 9999; transition: opacity 1.5s ease-in-out, visibility 1.5s;
-            background-color: var(--bg-color);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh;
+            z-index: 9999; background-color: var(--bg-color);
+            transition: opacity 1.5s ease;
         }
         #text-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px; box-sizing: border-box; overflow: hidden;
-            text-align: justify; word-break: break-all; font-size: 1.4rem;
-            line-height: 1.4; color: #2c2c2c;
-            -webkit-mask-image: radial-gradient(circle at center, transparent 150px, black 151px);
-            mask-image: radial-gradient(circle at center, transparent 150px, black 151px);
+            padding: 2vw; box-sizing: border-box; overflow: hidden;
+            text-align: justify; word-break: break-all; 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            color: rgba(0, 0, 0, 0.35); /* Gris medio de fondo */
+            -webkit-mask-image: radial-gradient(circle at center, transparent 150px, black 160px);
+            mask-image: radial-gradient(circle at center, transparent 150px, black 160px);
         }
+        
+        .hover-verse { 
+            font-weight: 700 !important; 
+            color: #000000 !important; 
+            background: transparent !important; 
+            text-shadow: none !important; 
+            letter-spacing: inherit !important;
+        }
+
         #logo-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; height: 300px; display: flex; align-items: center;
-            justify-content: center; border-radius: 50%; z-index: 10000; cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10000; cursor: pointer; text-align: center;
         }
-        #logo-container:hover { transform: translate(-50%, -50%) scale(1.08); }
-        #logo-container img { max-width: 80%; mix-blend-mode: multiply; }
-        
-        /* RESTAURADO: Efecto de los versos en negrita en el loader */
-        .hover-verse { 
-            color: #000; 
-            font-weight: bold; 
-            letter-spacing: 1px; 
-            text-shadow: 0 0 10px var(--bg-color), 0 0 20px var(--bg-color); 
-        }
+        #logo-container img { width: 220px; }
 
-        /* --- 02. EFECTO GHOST SCROLL --- */
+        /* --- 02. FÍSICAS DE ENTRADA --- */
+        #physics-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; }
+        .physics-letter { position: absolute; color: rgba(0, 0, 0, 0.07); will-change: transform, filter; font-weight: bold; }
+
+        /* --- 03. ESTRUCTURA SEGMENTOS --- */
+        #main-content { display: none; opacity: 0; position: relative; z-index: 10; transition: opacity 2s ease; }
         .segment { 
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; text-align: center; padding: 40px 5vw; 
-            box-sizing: border-box; position: relative;
-            
-            opacity: 0; filter: blur(20px) grayscale(50%); transform: translateY(80px) scale(0.98);
-            transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), 
-                        transform 1.5s cubic-bezier(0.22, 1, 0.36, 1), 
-                        filter 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform, filter, opacity;
+            min-height: 100vh; min-height: 100dvh; 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
+            opacity: 0; transform: translateY(40px);
+            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .segment.ghost-in { opacity: 1; filter: blur(0px) grayscale(0%); transform: translateY(0) scale(1); }
+        .segment.ghost-in { opacity: 1; transform: translateY(0); }
+        .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
 
-        #main-content { display: none; opacity: 0; position: relative; z-index: 10; transition: opacity 1.5s ease-in-out; }
-
-        /* --- A. HERO & FÍSICAS --- */
-        #physics-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; overflow: hidden; pointer-events: none; }
-        .physics-letter { position: absolute; font-weight: bold; line-height: 1; text-align: center; color: rgba(0, 0, 0, 0.06); will-change: transform, filter; white-space: nowrap; }
-        
-        .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: normal; letter-spacing: -1px; z-index: 10; }
-        .hero-subtitle { font-size: 1rem; color: var(--text-light); margin-top: 1rem; letter-spacing: 4px; z-index: 10; }
-        .scroll-indicator { position: absolute; bottom: 5vh; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.4; animation: pulseSlow 3s infinite ease-in-out; }
-        @keyframes pulseSlow { 0%, 100% { opacity: 0.2; transform: translateY(0); } 50% { opacity: 0.6; transform: translateY(5px); } }
-
-        /* --- B. INTRO (VACÍO POÉTICO) --- */
-        #B-intro { padding: 0 10vw; }
-        .intro-text { font-size: clamp(1.2rem, 4vw, 2rem); line-height: 1.8; text-align: center; max-width: 700px; }
-        .intro-line-2 { display: block; color: var(--text-light); font-size: 0.8em; margin-top: 1rem; }
-
-        /* --- C. ORÁCULO TIPOGRÁFICO MINIMALISTA --- */
-        .oracle-instruction { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 4rem; text-transform: uppercase; }
-        .oracle-stage { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 300px; height: 150px; position: relative; }
+        /* --- 04. ORÁCULO --- */
+        .oracle-instruction { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 4rem; text-transform: uppercase; text-align: center;}
+        .oracle-stage { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 300px; height: 150px; position: relative; margin: 0 auto;}
         .ritual-item {
-            width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;
+            width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;
             border: 1px solid var(--text-main); border-radius: 50%; background: transparent;
             font-size: 1.2rem; user-select: none; transition: transform 0.3s ease, background-color 0.3s ease;
         }
-        #oracle-key { cursor: grab; touch-action: none; z-index: 10; }
-        #oracle-key:active { cursor: grabbing; background-color: rgba(0,0,0,0.05); }
+        #oracle-key { cursor: grab; touch-action: none; z-index: 100; background: white; }
         #oracle-briefcase { border-style: dashed; }
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
-        #oracle-verse-container { margin-top: 4rem; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: clamp(1.1rem, 3vw, 1.5rem); line-height: 1.6; }
-        .typewriter-cursor { display: inline-block; width: 10px; height: 1em; background-color: var(--text-main); vertical-align: middle; margin-left: 5px; animation: blink 1s step-end infinite; opacity: 0; }
-        .typewriter-cursor.active { opacity: 1; }
+        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
 
-        /* --- D. LIBRO 3D (CUARTO OSCURO / LUZ INTERACTIVA) --- */
-        .presale-3d-segment {
-            background-color: #030812 !important;
-            background-image: radial-gradient(circle at 80% 80%, #0d1b2a 0%, #030812 70%);
-            padding: 0; min-height: 100vh; position: relative;
-            color: white; border-top: 1px solid #222;
+        /* --- 05. REVELACIÓN (LINTERNA + POLVO ATMOSFÉRICO) --- */
+        .reveal-segment { 
+            background-color: var(--bg-deep-blue) !important; 
+            color: white; flex-direction: row; justify-content: flex-start;
+            overflow: hidden; padding: 0 !important;
         }
-        #book-3d-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 21; cursor: pointer; }
-        .flare-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); z-index: 22; pointer-events: none; mix-blend-mode: screen; }
         
-        .presale-ui {
-            position: absolute; bottom: 15%; left: 8%; z-index: 25; 
-            display: flex; flex-direction: column; align-items: flex-start; text-align: left; pointer-events: none; 
+        #reveal-interaction-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; cursor: crosshair;
         }
-        .presale-ui h2 { font-size: 2rem; margin-bottom: 25px; font-weight: normal; letter-spacing: 1px; line-height: 1.2; text-shadow: 0 0 20px rgba(0,0,0,0.8); color: #ccc;}
-        .presale-ui h2 span { font-weight: bold; font-size: 3.5rem; color: #ffffff; }
-        .btn-presave {
-            background-color: #ffffff; color: #000; padding: 18px 45px; text-decoration: none; font-weight: bold; font-size: 1.1rem;
-            border-radius: 50px; transition: all 0.3s ease; box-shadow: 0 0 20px rgba(255,255,255,0.1); pointer-events: auto; 
-        }
-        .btn-presave:hover { background-color: #3b82f6; color: white; transform: scale(1.05); }
 
-        /* --- E. BANNER PREMIO (POSTER MUSEUM) --- */
-        .banner-segment {
-            min-height: 70vh !important; background-color: #f34213 !important;
-            border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); overflow: hidden;
-            color: var(--bg-color);
+        .reveal-ui { 
+            z-index: 10; text-align: left; max-width: 400px; 
+            padding: 10vh 8vw; position: relative; pointer-events: none;
         }
-        .award-content-wrapper { display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 90%; max-width: 1200px; height: 100%; z-index: 10; margin: 0 auto;}
-        .award-left-text { width: 45%; text-align: left; font-size: 1.2rem; line-height: 1.6; }
-        .award-highlight {
-            background-color: var(--bg-color); color: #f34213; padding: 10px 25px; font-weight: bold; font-size: 2.5rem;
-            display: inline-block; margin-bottom: 20px; letter-spacing: 2px; border: 2px solid var(--bg-color);
-        }
-        .burst-container { width: 50%; height: 500px; position: relative; display: flex; align-items: center; justify-content: center; }
-        #award-logo { width: 280px; height: auto; z-index: 15; filter: drop-shadow(0 0 15px rgba(0,0,0,0.2)); }
-        .radiating-text { position: absolute; color: var(--bg-color); font-weight: bold; font-size: 1.2rem; white-space: nowrap; pointer-events: none; opacity: 0.8; text-transform: uppercase; }
-
-        /* --- F. ARCHIVO GALERÍA (MANUAL) --- */
-        .cork-segment { background-color: var(--bg-alt); padding: 10vh 0; min-height: 80vh; overflow: hidden; }
-        .cork-title { font-size: 2rem; margin-bottom: 2vh; letter-spacing: 2px; font-weight: normal; }
+        .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
+        .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
+        .reveal-ui a { pointer-events: auto; } 
         
-        .slider-container { 
-            width: 100%; overflow-x: auto; overflow-y: hidden; position: relative; 
-            padding: 40px 5vw; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+        #reveal-masked-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+            /* REDUCIDO A UNA CUARTA PARTE (12vh en lugar de 35vh) PARA MÁS MISTERIO */
+            -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
+            mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
+            display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
         }
-        .slider-container::-webkit-scrollbar { height: 8px; }
-        .slider-container::-webkit-scrollbar-track { background: transparent; }
-        .slider-container::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
-        
-        .slider-track { display: flex; gap: 3vw; width: max-content; align-items: flex-start; }
 
-        .polaroid { 
-            background: white; padding: 15px 15px 50px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            cursor: pointer; transition: transform 0.3s ease; position: relative; 
-            flex: 0 0 320px; border: 1px solid var(--border-soft);
+        .reveal-book-wrapper {
+            width: 100%; max-width: 380px; aspect-ratio: 3/4;
+            background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
+            box-shadow: 0 0 40px rgba(255,255,255,0.05); 
         }
-        .polaroid:nth-child(odd) { transform: rotate(1.5deg); }
-        .polaroid:nth-child(even) { transform: rotate(-1.5deg); }
-        .polaroid:hover { transform: scale(1.03) rotate(0deg) !important; z-index: 50; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .polaroid img { width: 100%; height: auto; display: block; object-fit: contain; }
+
+        .ambient-dust {
+            position: absolute; pointer-events: none;
+            font-family: 'IBM Plex Mono', monospace; font-weight: 300; 
+            font-size: 0.4rem; color: #c0d0ff; 
+            text-shadow: 0 0 3px rgba(192, 208, 255, 0.8);
+            animation: floatAmbient 5s ease-in-out forwards;
+        }
+        @keyframes floatAmbient {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+            50% { opacity: 0.7; } 
+            100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
+        }
+
+        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO --- */
+        .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
+        .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
+        .gallery-header p { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); }
         
-        #gallery-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(246, 245, 242, 0.95); z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; cursor: zoom-out; backdrop-filter: blur(5px); }
-        #modal-polaroid { background: white; padding: 20px 20px 60px 20px; max-width: 90%; max-height: 85vh; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid var(--border-soft); }
-        #modal-img { max-width: 100%; max-height: 65vh; object-fit: contain; }
-        #modal-text { margin-top: 25px; font-size: 1.2rem; color: var(--text-main); font-style: italic; }
+        .slider-container { width: 100vw; overflow-x: auto; scrollbar-width: none; margin-top: 40px; padding-bottom: 20px;}
+        .slider-track { display: flex; gap: 40px; padding: 0 8vw; width: max-content; }
+        .polaroid { flex: 0 0 260px; background: white; padding: 15px 15px 40px 15px; border: 1px solid var(--border-soft); box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
+        .polaroid img { width: 100%; height: auto; filter: grayscale(0.2); }
 
-        /* --- G. FOOTER --- */
-        #G-footer { min-height: 60vh; border-top: 1px solid var(--border-soft); }
-        .btn-minimal { background: transparent; border: 1px solid var(--text-main); color: var(--text-main); padding: 1rem 2.5rem; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; transition: all 0.4s ease; text-decoration: none; text-transform: uppercase; }
-        .btn-minimal:hover { background-color: var(--text-main); color: var(--bg-color); }
+        .directory-container { width: 100%; max-width: 800px; margin: 60px auto 0; padding: 0 8vw; box-sizing: border-box; }
+        .dir-row { display: flex; align-items: flex-start; border-bottom: 1px solid var(--border-soft); padding: 15px 0; }
+        .dir-letter { font-weight: bold; font-size: 1.2rem; width: 40px; color: var(--text-light); flex-shrink: 0;}
+        .dir-artist { font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+        .dir-poem { font-size: 0.95rem; font-style: italic; color: var(--text-main); }
+        
+        .fine-print { font-size: 0.7rem; color: var(--text-light); opacity: 0.7; margin-top: 50px; text-align: center; width: 100%; line-height: 1.6; }
 
-        @media (max-width: 768px) { 
-            .presale-ui { top: auto; bottom: 10%; left: 5%; right: 5%; align-items: center; text-align: center; }
-            .presale-ui h2 { font-size: 1.5rem; }
-            .presale-ui h2 span { font-size: 2.5rem; }
-            .award-content-wrapper { flex-direction: column; text-align: center; }
-            .award-left-text { width: 100%; margin-bottom: 40px; text-align: center; }
-            .polaroid { flex: 0 0 260px; }
+        /* --- 07. PREMIO MINCUL --- */
+        .award-segment { background: var(--bg-dark) !important; color: white; text-align: center; overflow: hidden; }
+        .burst-container { width: 100%; height: 300px; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 20px;}
+        .award-logo-img { width: 180px; z-index: 15; filter: brightness(0) invert(1); }
+        .radiating-text { position: absolute; color: #444; font-size: 0.8rem; white-space: nowrap; pointer-events: none; text-transform: uppercase; }
+
+        /* --- BOTONES --- */
+        .btn-minimal {
+            display: inline-block; padding: 12px 30px; border: 1px solid var(--text-main);
+            color: var(--text-main); text-decoration: none; font-size: 0.7rem;
+            letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; pointer-events: auto;
+        }
+        .btn-minimal:hover { background: var(--text-main); color: var(--bg-color); }
+        .btn-light { border-color: white; color: white; margin-top: 20px; }
+        .btn-light:hover { background: white; color: var(--bg-dark); }
+
+        @media (max-width: 768px) {
+            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
+            .reveal-ui { padding: 12vh 8vw 5vh 8vw; margin: 0 auto; text-align: center; }
+            #reveal-masked-layer { justify-content: center; align-items: flex-end; padding-right: 0; padding-bottom: 8vh; }
+            .reveal-book-wrapper { max-width: 250px; }
+            .chapter-mark { top: 20px; left: 20px; z-index: 20;}
         }
     </style>
 </head>
@@ -210,352 +186,468 @@
 
     <div id="loader-wrapper">
         <div id="text-container"><span id="dynamic-text"></span></div>
-        <div id="logo-container"><img src="logo.png" alt="Logo" onerror="this.style.display='none';"></div>
+        <div id="logo-container">
+            <img src="logo.png" alt="Cuaderno Azul" onerror="this.style.opacity='0'">
+            <p style="font-size: 0.6rem; letter-spacing: 5px; margin-top: 20px; opacity: 0.5; color: #000;">PULSAR PARA ABRIR</p>
+        </div>
     </div>
 
     <div id="physics-bg"></div>
 
     <div id="main-content">
-        <section class="segment" id="seg1">
-            <div class="chapter-mark">A.</div>
-            <h1 class="hero-title">Cuaderno Azul</h1>
-            <div class="hero-subtitle">ARCHIVO POÉTICO</div>
-            <div class="scroll-indicator">DESCUBRIR ↓</div>
+        <section class="segment">
+            <div class="chapter-mark">A. ARCHIVO</div>
+            <h1 style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; margin: 0; text-align: center;">Cuaderno Azul</h1>
+            <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem; text-align: center; padding: 0 20px;">DIRECTORIO DE VERSOS (2008-2026)</p>
         </section>
 
-        <section class="segment" id="B-intro">
-            <div class="chapter-mark">B.</div>
-            <div class="intro-text">
-                <span class="intro-line-1">La salida es el comienzo.</span>
-                <span class="intro-line-2">Todo lo que necesitas te está buscando.</span>
-            </div>
-        </section>
-
-        <section class="segment" id="C-oracle">
-            <div class="chapter-mark">C.</div>
-            <div class="oracle-instruction">Acerca la llave al contenedor</div>
-            <div class="oracle-stage">
-                <div id="oracle-key" class="ritual-item">O</div>
-                <div id="oracle-briefcase" class="ritual-item">[ ]</div>
-            </div>
-            <div id="oracle-verse-container">
-                <span id="oracle-verse-text"></span><span class="typewriter-cursor" id="type-cursor"></span>
-            </div>
-        </section>
-
-        <section class="segment presale-3d-segment" id="D-3d">
-            <div class="chapter-mark" style="color: #666;">D.</div>
-            <div class="flare-overlay"></div>
-            <div id="book-3d-container"></div>
-            <div class="presale-ui">
-                <h2>ASEGURA TU EDICIÓN FÍSICA DEL<br><span>Cuaderno Azul</span></h2>
-                <a href="https://wa.me/51900000000?text=Hola!%20Quiero%20hacer%20mi%20pre%20reserva%20de%20Cuaderno%20Azul" target="_blank" class="btn-presave">
-                    Haz tu pre reserva
-                </a>
-            </div>
-        </section>
-
-        <section class="segment banner-segment" id="E-award">
-            <div class="chapter-mark" style="color: var(--bg-color);">E.</div>
-            <div class="award-content-wrapper">
-                <div class="award-left-text">
-                    <div class="award-highlight">GANADOR</div><br>
-                    Estímulos Económicos para el Libro y el Fomento de la Lectura 2025<br>
-                    <span style="font-size: 0.9em; opacity: 0.8; display: block; margin-top: 10px;">Ministerio de Cultura del Perú</span>
+        <section class="segment">
+            <div class="chapter-mark">B. DISPOSITIVO</div>
+            <div style="width: 100%;">
+                <div class="oracle-instruction">Acerca la llave al contenedor</div>
+                <div class="oracle-stage">
+                    <div id="oracle-key" class="ritual-item">⚷</div>
+                    <div id="oracle-briefcase" class="ritual-item">⎔</div>
                 </div>
-                <div class="burst-container" id="burst-box">
-                    <img src="img/logoinsignia.png" id="award-logo" alt="Logo" onerror="this.style.opacity='0.2'">
+                <div id="oracle-verse-container">
+                    <span id="oracle-verse-text"></span>
                 </div>
             </div>
         </section>
 
-        <section class="segment cork-segment" id="F-gallery">
-            <div class="chapter-mark">F.</div>
-            <h2 class="cork-title">Archivo Visual</h2>
+        <section class="segment reveal-segment" id="section-materia">
+            <div class="chapter-mark" style="color: #666; z-index: 20;">C. MATERIA</div>
+            
+            <div class="reveal-ui">
+                <h2>El libro también existe<br>fuera de la pantalla.<span>Cuaderno Azul</span></h2>
+                <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-light">Reservar ejemplar</a>
+            </div>
+
+            <div id="reveal-interaction-layer"></div>
+            <div id="reveal-masked-layer">
+                <div class="reveal-book-wrapper"></div>
+            </div>
+        </section>
+
+        <section class="segment award-segment">
+            <div class="chapter-mark" style="color: #666;">D. RECONOCIMIENTO</div>
+            <p style="font-size: 0.7rem; border: 1px solid #fff; padding: 4px 12px; display: inline-block; letter-spacing: 2px;">GANADOR</p>
+            <h3 style="font-weight: 300; margin: 20px 0; font-size: 1.1rem; line-height: 1.6; z-index: 20; position: relative;">Estímulos Económicos para el Libro<br>y el Fomento de la Lectura 2025</h3>
+            <div class="burst-container" id="burst-box">
+                <img src="img/logoinsignia.png" class="award-logo-img" alt="Ministerio de Cultura" onerror="this.style.opacity='0'">
+            </div>
+        </section>
+
+        <section class="segment gallery-segment">
+            <div class="chapter-mark">E. ARCHIVO VISUAL</div>
+            
+            <div class="gallery-header">
+                <h2 style="font-weight: 300; margin-bottom: 5px; font-size: 2rem;">Archivo Visual</h2>
+                <p>Escoge tu print</p>
+            </div>
+
             <div class="slider-container">
                 <div class="slider-track">
-                    <div class="polaroid" onclick="openZoom(1, 'La ciudad solo existe porque la imaginas.')"><img src="img/foto1.png" alt="foto1"></div>
-                    <div class="polaroid" onclick="openZoom(2, 'Lima está empapada como tú.')"><img src="img/foto2.png" alt="foto2"></div>
-                    <div class="polaroid" onclick="openZoom(3, 'El tiempo está después.')"><img src="img/foto3.png" alt="foto3"></div>
-                    <div class="polaroid" onclick="openZoom(4, 'Naceré cuando te vea.')"><img src="img/foto4.png" alt="foto4"></div>
-                    <div class="polaroid" onclick="openZoom(5, 'Todo lo que necesitas te busca.')"><img src="img/foto5.png" alt="foto5"></div>
-                    <div class="polaroid" onclick="openZoom(6, 'Soy color a tiempo completo.')"><img src="img/foto6.png" alt="foto6"></div>
-                    <div class="polaroid" onclick="openZoom(7, 'El amor es mitad dolor.')"><img src="img/foto7.png" alt="foto7"></div>
-                    <div class="polaroid" onclick="openZoom(8, 'Escribir es madrugada.')"><img src="img/foto8.png" alt="foto8"></div>
-                    <div class="polaroid" onclick="openZoom(9, 'La salida es el comienzo.')"><img src="img/foto9.png" alt="foto9"></div>
+                    <div class="polaroid"><img src="img/foto1.png" alt="Print 1" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
+                    <div class="polaroid"><img src="img/foto2.png" alt="Print 2" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
+                    <div class="polaroid"><img src="img/foto3.png" alt="Print 3" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
+                    <div class="polaroid"><img src="img/foto4.png" alt="Print 4" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"></div>
                 </div>
             </div>
+
+            <div class="directory-container">
+                <div class="dir-row">
+                    <div class="dir-letter">A</div>
+                    <div class="dir-data">
+                        <div class="dir-artist">Artista 1</div>
+                        <div class="dir-poem">"Se ha producido un error, Daniel. Te has alejado demasiado."</div>
+                    </div>
+                </div>
+                <div class="dir-row">
+                    <div class="dir-letter">B</div>
+                    <div class="dir-data">
+                        <div class="dir-artist">Artista 2</div>
+                        <div class="dir-poem">"El poema nace del mismo lugar que el beso."</div>
+                    </div>
+                </div>
+                <div class="dir-row">
+                    <div class="dir-letter">C</div>
+                    <div class="dir-data">
+                        <div class="dir-artist">Artista 3</div>
+                        <div class="dir-poem">"La salida es el comienzo."</div>
+                    </div>
+                </div>
+                <div class="dir-row">
+                    <div class="dir-letter">D</div>
+                    <div class="dir-data">
+                        <div class="dir-artist">Artista 4</div>
+                        <div class="dir-poem">"El tiempo es solo una duda."</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="fine-print">La compra incluye un llavero y un sticker.<br>Delivery no incluido.</p>
         </section>
 
-        <div id="gallery-modal" onclick="closeZoom()"><div id="modal-polaroid"><img id="modal-img" src=""><div id="modal-text"></div></div></div>
-
-        <section class="segment" id="G-footer">
-            <div class="chapter-mark">G.</div>
-            <a href="#seg1" class="btn-minimal">Volver al comienzo</a>
-            <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.5;">© 2026 El Cuaderno Azul</div>
+        <section class="segment">
+            <p style="opacity: 0.4;">El final siempre es el correcto.</p>
+            <a href="#" onclick="window.scrollTo(0,0); return false;" class="btn-minimal" style="border: none; text-decoration: underline;">Volver al comienzo</a>
         </section>
     </div>
 
     <script>
-        // ==========================================
-        // 1. LOADER MATRIX RESTAURADO & FÍSICAS
-        // ==========================================
-        const versosCarga = [
-            "EL TIEMPO ESTÁ DESPUÉS.", 
-            "LIMA ESTÁ EMPAPADA COMO TÚ.", 
-            "LA SALIDA ES EL COMIENZO.",
-            "EL AMOR ES MITAD DOLOR."
+        const poemasArchivo = [
+            "Se ha producido un error, Daniel. / Te has alejado demasiado.",
+            "Debo ser el animal que solo piensa en el presente.",
+            "Este libro no es apto para policías.",
+            "Hoy soy solo los abrazos que te di.",
+            "Mientras más me alejo de la ciudad, más me acerco al mar.",
+            "El verano solo existe porque te amo / y te amo sólo porque existes.",
+            "El amor es mitad dolor. / ¿Y la otra mitad? / Tú.",
+            "Es ahora o ahora.",
+            "Extráñame, tal cual lo acordado.",
+            "Naceré cuando te vea / y moriré cuando me marche.",
+            "Los buenos amigos se conocen en el mar.",
+            "El amor siempre nos lleva a un mismo punto: encontrarnos con nosotros mismos.",
+            "Mi arte es existir.",
+            "El poema nace del mismo lugar que el beso.",
+            "Bailar siempre trae consecuencias.",
+            "No puede haber conciencia en una máquina no biológica.",
+            "Busco un barco que sepa naufragar.",
+            "Aquella canción me recuerda bailando.",
+            "¿Habrá pasado alguna vida en la que no nos dimos un beso?",
+            "Cierra los ojos y sigue leyendo.",
+            "La realidad solo por ser compartida ya es una negociación con el otro.",
+            "Baila con tu prójimo como contigo mismo.",
+            "¿Casualidad o causalidad?",
+            "Jamás se formó ciudadanía, se formó mano de obra.",
+            "Confiar en la máquina también es obedecer.",
+            "Ser rebelde no es no creer, es ya no creer.",
+            "Consume hasta morir.",
+            "La ciudad solo existe porque la imaginas.",
+            "La salida es el comienzo.",
+            "El diablo no sería quien es si no hubiese cometido el error de creer en dios.",
+            "Un segundo bastará para llegar a tu destino.",
+            "El ánimo de destrucción es también un ánimo de construcción.",
+            "¿Qué sería de dios sin las cárceles?",
+            "El tiempo es solo una duda.",
+            "No hay nada más sincero que despertar.",
+            "¿Dónde termina el tiempo y cuándo empieza el espacio?",
+            "Deja que todo se vaya lento.",
+            "Entramos al eterno infinito.",
+            "La muerte es la verdadera lucha contra el ego.",
+            "Escribir te hace libre de la idea.",
+            "El clic de tu encendedor es el nacimiento de una estrella.",
+            "El poder como dominación es un modelo eurocéntrico.",
+            "Te extraño más cuando no estás.",
+            "Todo lo que escribo se transforma en madrugada.",
+            "Yo solo escucho lo que tú dices.",
+            "Deberías estar a este lado del sol.",
+            "Yo olvido más de lo que escribo.",
+            "El futuro es la gran promesa que lo justifica todo.",
+            "El pensamiento es la forma y el cuerpo el escenario.",
+            "El mar cumple una función filosófica.",
+            "Esperar es una forma de disciplinarnos.",
+            "En el Perú, después del fujimorismo, vino el fujimorismo.",
+            "Sembrar sueños gota a gota en el fondo del mar.",
+            "Besarte no es perder de ninguna forma.",
+            "El fragmento como totalidad del poema es el arma.",
+            "Se reparan galaxias destruidas.",
+            "La oscuridad lo hace todo más grande.",
+            "Lentamente la gravedad nos mata.",
+            "La competencia por la acumulación genera desigualdad.",
+            "La impunidad genera violencia.",
+            "El sistema no falla en su gramática, falla en su sentido.",
+            "Soy una gota y la muerte es un océano que me espera.",
+            "Hoy empieza la conquista del desierto.",
+            "Habitamos el sueño de un dios.",
+            "Lo divino es el presente, lo mortal es lo humano.",
+            "El silencio es más honesto que las palabras.",
+            "Tu pelo es tu mejor himno.",
+            "Deja que el lector imagine el poema.",
+            "Toma tiempo amar lo invisible.",
+            "Hoy soy un infinito dividido en todos.",
+            "El capital no puede invertir en la vida, solo en la muerte.",
+            "Sin memoria no hay inspiración ni justicia.",
+            "La imaginación crea, el sistema invade.",
+            "Jesús no murió, lo mataron.",
+            "La justicia solo existe cuando pone al ser humano en el centro.",
+            "Podrás dejar de ser clase media, pero jamás dejarás de trabajar.",
+            "Desmantelar el tiempo es un acto político.",
+            "El miedo al otro construye nuestra jaula.",
+            "Donde llega el ejército llega la Coca-Cola.",
+            "Con el capitalismo de por medio jamás seremos libres.",
+            "Lima solo es bella desde la indiferencia.",
+            "Esta página te mira cuando dejas de leerla.",
+            "La libertad solo se pierde cuando uno trata de encontrarla.",
+            "Cada vez que cierras los ojos te mienten.",
+            "La muerte es este momento / la vida es este momento.",
+            "El poema no es un contenedor de pensamientos, es la máquina que los produce.",
+            "Morir cuesta la vida.",
+            "El mar entero cabe en la mitad de tu sonrisa.",
+            "Deja de olvidarte tu nombre.",
+            "El otro es nuestra herida y nuestra salvación.",
+            "Necesitamos extinguirnos para salvar el planeta.",
+            "Todo depende de nada.",
+            "¿Podemos confiar en el olvido?",
+            "Es imposible vivir sin olvidar.",
+            "Obedecer es una forma de olvidar.",
+            "El absurdo debe ser radical.",
+            "Recordar es viajar a otro presente.",
+            "Sentir es otra forma de conocer.",
+            "El dinero es la medida del tiempo robado.",
+            "Mis mejores versos los hago en tus labios."
         ];
+
+        // --- 01. MATRIX LOADER (MÁS LENTO Y EXACTO) ---
         const textContainer = document.getElementById('dynamic-text');
-        const loaderWrapper = document.getElementById('loader-wrapper');
-        const letrasMatrix = "abcdefghijklmnopqrstuvwxyz      "; 
+        const charsPool = "abcdefghijklmnopqrstuvwxyz ";
+        let charCount = 3000;
+        let cols = 0, rows = 0;
         
-        let charCount = 3000; 
+        let activeVerse = "";
+        let activeVerseIndex = -1;
+        let verseTimeout;
+        let currentRow = -1;
+
+        // Calcula dimensiones estimadas de caracteres para crear la grilla
         function updateCharCount() {
-            let cols = Math.floor(window.innerWidth / 11.5);
-            let rows = Math.floor(window.innerHeight / 26.8);
-            charCount = Math.floor(cols * rows * 1.1); 
+            // Un caracter de 1.1rem mide aprox 11px de ancho y 28px de alto
+            cols = Math.floor(window.innerWidth / 11);
+            rows = Math.floor(window.innerHeight / 28);
+            charCount = cols * rows; 
         }
-        updateCharCount(); window.addEventListener('resize', updateCharCount);
+        updateCharCount();
+        window.addEventListener('resize', updateCharCount);
+
+        function updateMatrix() {
+            let txt = "";
+            for(let i = 0; i < charCount; i++) {
+                txt += charsPool[Math.floor(Math.random() * charsPool.length)];
+            }
+            if (activeVerse !== "" && activeVerseIndex !== -1) {
+                let safeIndex = Math.min(activeVerseIndex, charCount - activeVerse.length);
+                let part1 = txt.substring(0, safeIndex);
+                let part2 = txt.substring(safeIndex + activeVerse.length);
+                textContainer.innerHTML = part1 + `<span class="hover-verse">${activeVerse}</span>` + part2;
+            } else {
+                textContainer.innerHTML = txt;
+            }
+        }
         
-        let isPoemVisible = false, currentPoem = "", insertIndex = 0;
-        let isInteractionActive = false, interactionPoemStr = "", interactionIndex = 0, interactTimeout;
+        // Intervalo más lento (160ms) para que parpadee menos
+        let matrixInt = setInterval(updateMatrix, 160);
 
-        // Aparición automática de versos en el loader
-        setInterval(() => {
-            if (!isPoemVisible && !isInteractionActive) {
-                currentPoem = " " + versosCarga[Math.floor(Math.random() * versosCarga.length)] + " ";
-                insertIndex = Math.floor(Math.random() * (charCount - currentPoem.length));
-                isPoemVisible = true;
-                setTimeout(() => { isPoemVisible = false; }, 3000);
-            }
-        }, 4000);
+        const loaderWrapper = document.getElementById('loader-wrapper');
         
-        let matrixInterval = setInterval(() => {
-            let newText = "";
-            for (let i = 0; i < charCount; i++) { 
-                newText += letrasMatrix.charAt(Math.floor(Math.random() * letrasMatrix.length)); 
-            }
-
-            // Inyectar el verso en negrita
-            if (isInteractionActive) {
-                let styledPoem = `<span class="hover-verse">${interactionPoemStr}</span>`;
-                newText = newText.substring(0, interactionIndex) + styledPoem + newText.substring(interactionIndex + interactionPoemStr.length);
-            } else if (isPoemVisible) {
-                let styledPoem = `<span class="hover-verse">${currentPoem}</span>`;
-                newText = newText.substring(0, insertIndex) + styledPoem + newText.substring(insertIndex + currentPoem.length);
-            }
-
-            textContainer.innerHTML = newText;
-        }, 80);
-
-        // Interacción del usuario (Mouse/Touch) para el loader
         function handleInteraction(e) {
+            let clientX = (e.touches ? e.touches[0].clientX : e.clientX);
             let clientY = (e.touches ? e.touches[0].clientY : e.clientY);
+            
+            let percentX = clientX / window.innerWidth;
             let percentY = clientY / window.innerHeight;
-            if (!isInteractionActive) {
-                isInteractionActive = true;
-                interactionPoemStr = " » " + versosCarga[Math.floor(Math.random() * versosCarga.length)] + " « ";
+            
+            let newRow = Math.floor(percentY * rows);
+            
+            // Si cambia de línea o no hay verso activo, saca uno nuevo
+            if (newRow !== currentRow || activeVerse === "") {
+                currentRow = newRow;
+                activeVerse = " " + poemasArchivo[Math.floor(Math.random() * poemasArchivo.length)] + " ";
             }
-            let calculatedIndex = Math.floor(percentY * charCount);
-            interactionIndex = Math.max(0, Math.min(calculatedIndex, charCount - interactionPoemStr.length));
-            clearTimeout(interactTimeout);
-            interactTimeout = setTimeout(() => { isInteractionActive = false; }, 400); 
+            
+            // Calcula la columna (X) centrando el verso respecto al cursor
+            let targetCol = Math.floor(percentX * cols) - Math.floor(activeVerse.length / 2);
+            // Evita que el verso se corte en los bordes izquierdo o derecho
+            targetCol = Math.max(0, Math.min(targetCol, cols - activeVerse.length));
+            
+            // Índice final inyectado
+            activeVerseIndex = (newRow * cols) + targetCol;
+            
+            clearTimeout(verseTimeout);
+            verseTimeout = setTimeout(() => { 
+                activeVerse = ""; 
+                activeVerseIndex = -1; 
+                currentRow = -1; 
+            }, 600); 
         }
 
         loaderWrapper.addEventListener('mousemove', handleInteraction);
-        loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { e.preventDefault(); handleInteraction(e); } }, {passive: false});
-        loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { e.preventDefault(); handleInteraction(e); } }, {passive: false});
+        loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
+        loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
+        // --- 02. FÍSICAS ---
+        const { Engine, Runner, Bodies, Composite, Events } = Matter;
+        const engine = Engine.create();
         function initPhysics() {
-            const bgContainer = document.getElementById('physics-bg');
-            const { Engine, Runner, Bodies, Composite, Events } = Matter;
-            const engine = Engine.create(); engine.gravity.y = 0.8; 
-            const width = window.innerWidth, height = window.innerHeight; 
-            const ground = Bodies.rectangle(width / 2, height + 50, width * 2, 100, { isStatic: true });
-            Composite.add(engine.world, [ground]);
-
-            let currentFilledArea = 0, targetArea = (width * height) * 0.65;
-            const domLetters = [];
-
-            (function dropLetter() {
-                if (currentFilledArea >= targetArea) return;
-                const letter = "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random() * 26));
-                const vSize = (Math.random() * 20 + 10) * (width / 100); 
-                const div = document.createElement('div'); div.classList.add('physics-letter'); div.innerText = letter; div.style.fontSize = `${vSize}px`;
-                const rot = Math.random() * 360; div.style.transform = `rotate(${rot}deg)`; div.style.visibility = 'hidden'; 
-                bgContainer.appendChild(div);
-                
-                const rect = div.getBoundingClientRect(); div.style.visibility = 'visible'; 
-                currentFilledArea += (rect.width * rect.height);
-                const body = Bodies.rectangle(Math.random()*width, -200, rect.width*0.85, rect.height*0.85, { restitution: 0.3, friction: 0.8, density: 0.08, angle: rot * (Math.PI / 180) });
+            const width = window.innerWidth, height = window.innerHeight;
+            const ground = Bodies.rectangle(width/2, height + 50, width, 100, { isStatic: true });
+            Composite.add(engine.world, ground);
+            let letters = [];
+            const drop = setInterval(() => {
+                if(letters.length > 150) { clearInterval(drop); return; }
+                const char = "0123456789abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random()*36));
+                const size = Math.random() * 35 + 10;
+                const div = document.createElement('div');
+                div.className = 'physics-letter'; div.innerText = char; div.style.fontSize = size + 'px';
+                document.getElementById('physics-bg').appendChild(div);
+                const body = Bodies.rectangle(Math.random()*width, -50, size, size, { restitution: 0.4, friction: 0.2 });
                 Composite.add(engine.world, body);
-                domLetters.push({ body: body, elem: div, w: rect.width, h: rect.height });
-                setTimeout(dropLetter, 120); 
-            })();
-
-            Events.on(engine, 'afterUpdate', function() {
-                domLetters.forEach(item => {
-                    const pos = item.body.position; const angle = item.body.angle;
-                    const speed = Math.sqrt(Math.pow(item.body.velocity.x, 2) + Math.pow(item.body.velocity.y, 2));
-                    let blurAmount = (speed > 2) ? Math.min(speed * 0.15, 8) : 0; 
-                    item.elem.style.transform = `translate(${pos.x - item.w/2}px, ${pos.y - item.h/2}px) rotate(${angle}rad)`;
-                    item.elem.style.filter = blurAmount > 0 ? `blur(${blurAmount}px)` : 'none'; 
+                letters.push({ body, elem: div });
+            }, 50);
+            Events.on(engine, 'afterUpdate', () => {
+                letters.forEach(item => {
+                    const { x, y } = item.body.position;
+                    item.elem.style.transform = `translate(${x}px, ${y}px) rotate(${item.body.angle}rad)`;
+                    item.elem.style.filter = `blur(${Math.min(item.body.speed * 0.4, 8)}px)`;
                 });
             });
             Runner.run(Runner.create(), engine);
-
-            function handleOrientation(e) {
-                engine.gravity.x = Math.max(-1.5, Math.min(1.5, (e.gamma ? e.gamma / 30 : 0)));
-                engine.gravity.y = Math.max(0.2, Math.min(2.5, (e.beta ? e.beta / 30 : 0.8))); 
-            }
-            window.addEventListener('deviceorientation', handleOrientation);
+            window.addEventListener('deviceorientation', (e) => {
+                engine.gravity.x = e.gamma / 20; engine.gravity.y = e.beta / 20;
+            });
         }
 
-        // ==========================================
-        // 2. ORÁCULO TIPOGRÁFICO
-        // ==========================================
+        // --- 03. ORÁCULO (ARRASTRE EXACTO Y SONIDO DE LLAVE) ---
         const key = document.getElementById('oracle-key');
-        const briefcase = document.getElementById('oracle-briefcase');
+        const box = document.getElementById('oracle-briefcase');
         const verseText = document.getElementById('oracle-verse-text');
-        const cursor = document.getElementById('type-cursor');
-        const versos = ["Naceré cuando te vea y moriré cuando me marche.", "El amor es mitad dolor.", "El tiempo es solo una duda."];
-        let isDragging = false, startX, startY, initialX, initialY, hasTriggered = false;
+        
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let currentX = 0, currentY = 0;
+
+        function playKeySound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
 
         key.addEventListener('pointerdown', (e) => {
-            if (hasTriggered) return; isDragging = true;
-            startX = e.clientX; startY = e.clientY;
-            const matrix = new WebKitCSSMatrix(window.getComputedStyle(key).transform);
-            initialX = matrix.m41; initialY = matrix.m42;
-            key.style.transition = 'none'; key.setPointerCapture(e.pointerId);
+            key.setPointerCapture(e.pointerId);
+            isDragging = true;
+            startX = e.clientX - currentX;
+            startY = e.clientY - currentY;
+            key.style.transition = 'none';
+            playKeySound(); 
         });
 
-        window.addEventListener('pointermove', (e) => {
-            if (!isDragging || hasTriggered) return; e.preventDefault();
-            key.style.transform = `translate(${initialX + (e.clientX - startX)}px, ${initialY + (e.clientY - startY)}px)`;
-            const kR = key.getBoundingClientRect(), bR = briefcase.getBoundingClientRect();
-            const dist = Math.hypot((kR.left + kR.width/2) - (bR.left + bR.width/2), (kR.top + kR.height/2) - (bR.top + bR.height/2));
-            if (dist < 50) briefcase.classList.add('proximity'); else briefcase.classList.remove('proximity');
+        key.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            key.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            
+            let kRect = key.getBoundingClientRect();
+            let bRect = box.getBoundingClientRect();
+            let dist = Math.hypot((kRect.left + kRect.width/2) - (bRect.left + bRect.width/2), (kRect.top + kRect.height/2) - (bRect.top + bRect.height/2));
+            if(dist < 60) box.classList.add('proximity'); else box.classList.remove('proximity');
         });
-
-        window.addEventListener('pointerup', () => {
-            if (!isDragging) return; isDragging = false;
+        
+        key.addEventListener('pointerup', () => {
+            if (!isDragging) return;
+            isDragging = false;
             key.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
-            if (briefcase.classList.contains('proximity') && !hasTriggered) {
-                hasTriggered = true; key.style.opacity = '0';
-                briefcase.innerText = "—"; briefcase.style.background = "transparent"; briefcase.style.color = "var(--text-main)";
-                let v = versos[Math.floor(Math.random() * versos.length)], i = 0;
-                cursor.classList.add('active');
-                function typeWriter() {
-                    if (i < v.length) { verseText.innerHTML += v.charAt(i); i++; setTimeout(typeWriter, Math.random() * 40 + 40); } 
-                    else { setTimeout(() => cursor.classList.remove('active'), 3000); }
-                }
-                setTimeout(typeWriter, 600);
-            } else if (!hasTriggered) { key.style.transform = `translate(0px, 0px)`; }
+            
+            if(box.classList.contains('proximity')) {
+                key.style.display = 'none'; box.innerHTML = "—";
+                playKeySound(); 
+                let txt = poemasArchivo[Math.floor(Math.random() * poemasArchivo.length)], i = 0;
+                verseText.innerHTML = "";
+                const type = () => { if(i < txt.length) { verseText.innerHTML += txt.charAt(i); i++; setTimeout(type, 40); }};
+                type();
+            } else {
+                currentX = 0; currentY = 0;
+                key.style.transform = `translate(0px, 0px)`;
+            }
         });
 
-        // ==========================================
-        // 3. LIBRO 3D
-        // ==========================================
-        let scene, camera, renderer, book, linterna3D;
-        let targetRotX = 0, targetRotY = 0, isMobile = window.innerWidth <= 768;
+        // --- 04. REVELACIÓN (POLVO ATMOSFÉRICO + MÁSCARA MÁS PEQUEÑA) ---
+        const interactionLayer = document.getElementById('reveal-interaction-layer');
+        const maskedLayer = document.getElementById('reveal-masked-layer');
+        const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
-        function init3DBook() {
-            const container = document.getElementById('book-3d-container');
-            scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight); container.appendChild(renderer.domElement);
+        setInterval(() => {
+            if (maskedLayer.style.getPropertyValue('--mx') === '') return;
             
-            container.addEventListener('click', () => window.open('https://wa.me/51900000000', '_blank'));
-
-            const loader = new THREE.TextureLoader();
-            const loadTex = (path, color) => {
-                const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.9, metalness: 0.05 });
-                loader.load(path, (tex) => { mat.map = tex; mat.color.setHex(0xffffff); mat.needsUpdate = true; });
-                return mat;
-            };
-
-            book = new THREE.Mesh(new THREE.BoxGeometry(3.5, 5, 0.2), [
-                new THREE.MeshStandardMaterial({ color: 0xeeeeee }), loadTex('img/lomo.jpg', 0xdddddd), 
-                new THREE.MeshStandardMaterial({ color: 0xeeeeee }), new THREE.MeshStandardMaterial({ color: 0xeeeeee }), 
-                loadTex('img/portada.jpg', 0x113366), loadTex('img/contraportada.jpg', 0x113366)
-            ]);
-            book.position.set(isMobile ? 0 : 2, isMobile ? 1.5 : 0, 0); scene.add(book);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.9)); 
-            linterna3D = new THREE.PointLight(0xffffff, 0.5, 30); 
-            linterna3D.position.set(0, 0, 6); scene.add(linterna3D);
-            camera.position.z = 12;
+            const char = charsArr[Math.floor(Math.random() * charsArr.length)];
+            const el = document.createElement('div');
+            el.className = 'ambient-dust';
+            el.innerText = char;
             
-            document.addEventListener('mousemove', (e) => {
-                if (!isMobile && book) {
-                    const mX = (e.clientX/window.innerWidth)*2-1, mY = -(e.clientY/window.innerHeight)*2+1;
-                    targetRotY = mX*0.35; targetRotX = mY*0.35;
-                    linterna3D.position.set(mX*8, mY*8, 5);
-                }
-            });
+            el.style.left = `${Math.random() * 100}%`; 
+            el.style.top = `${Math.random() * 100}%`;
             
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight); isMobile = window.innerWidth <= 768;
-                if (book) book.position.set(isMobile ? 0 : 2, isMobile ? 1.5 : 0, 0);
-            });
-            animate3D();
+            el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
+            el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
+            el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
+            
+            maskedLayer.appendChild(el);
+            setTimeout(() => el.remove(), 4500); 
+        }, 100);
+
+        function updateFlashlight(x, y) {
+            maskedLayer.style.setProperty('--mx', `${x}px`);
+            maskedLayer.style.setProperty('--my', `${y}px`);
         }
 
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            if (book) { book.rotation.y += (targetRotY - book.rotation.y)*0.05; book.rotation.x += (targetRotX - book.rotation.x)*0.05; }
-            renderer.render(scene, camera);
-        }
+        interactionLayer.addEventListener('mousemove', (e) => {
+            const rect = interactionLayer.getBoundingClientRect();
+            updateFlashlight(e.clientX - rect.left, e.clientY - rect.top);
+        });
 
-        // ==========================================
-        // 4. BANNER GANADOR
-        // ==========================================
-        function createRadiatingBanner() {
-            const burstBox = document.getElementById('burst-box'); const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            for (let i = 0; i < 24; i++) {
-                const span = document.createElement('span'); span.className = 'radiating-text';
-                span.style.transform = `rotate(${(i/24)*360}deg) translateX(180px)`; burstBox.appendChild(span);
+        interactionLayer.addEventListener('touchmove', (e) => {
+            const rect = interactionLayer.getBoundingClientRect();
+            updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+        }, {passive: true});
+
+        // --- 05. PREMIO MINCUL ---
+        function createRadiatingSun() {
+            const burstBox = document.getElementById('burst-box');
+            const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (let i = 0; i < 30; i++) {
+                const span = document.createElement('span');
+                span.className = 'radiating-text';
+                span.style.transform = `rotate(${(i/30)*360}deg) translateX(150px)`;
+                burstBox.appendChild(span);
             }
             setInterval(() => {
                 document.querySelectorAll('.radiating-text').forEach(s => {
                     let junk = ""; for(let j=0; j<6; j++) junk += chars[Math.floor(Math.random()*chars.length)];
-                    s.innerText = (Math.random() > 0.8) ? "GANADOR" : junk;
+                    s.innerText = junk;
                 });
-            }, 100);
+            }, 80);
         }
 
-        function openZoom(id, text) { 
-            const m = document.getElementById('gallery-modal'); m.style.display = 'flex'; document.body.style.overflow = 'hidden';
-            document.getElementById('modal-img').src = `img/foto${id}.png`; document.getElementById('modal-text').innerText = text;
-        }
-        function closeZoom() { document.getElementById('gallery-modal').style.display='none'; document.body.style.overflow='auto'; }
-
-        // ==========================================
-        // 5. OBSERVER DE GHOST Y ARRANQUE WEB
-        // ==========================================
-        const ghostObserver = new IntersectionObserver((entries) => {
-            entries.forEach(e => e.isIntersecting ? e.target.classList.add('ghost-in') : e.target.classList.remove('ghost-in'));
-        }, { threshold: 0.15 });
-
-        function enterWebsite() { 
-            clearInterval(matrixInterval); 
-            document.getElementById('loader-wrapper').style.opacity = '0'; 
-            setTimeout(() => { document.getElementById('loader-wrapper').style.display = 'none'; }, 1500);
+        // --- ARRANQUE ---
+        document.getElementById('logo-container').onclick = () => {
+            clearInterval(matrixInt);
+            document.getElementById('loader-wrapper').style.opacity = '0';
             
-            document.body.classList.remove('scroll-locked'); 
-            document.getElementById('main-content').style.display = 'block'; 
-            
-            setTimeout(() => { 
-                document.getElementById('main-content').style.opacity = '1'; 
-                document.querySelectorAll('.segment').forEach(seg => ghostObserver.observe(seg));
-            }, 50); 
-            
-            setTimeout(initPhysics, 600); init3DBook(); createRadiatingBanner();
-        }
-        
-        document.getElementById('logo-container').addEventListener('click', enterWebsite);
+            setTimeout(() => {
+                document.getElementById('loader-wrapper').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('main-content').style.opacity = '1';
+                document.body.classList.remove('scroll-locked');
+                initPhysics(); createRadiatingSun();
+                
+                const obs = new IntersectionObserver((entries) => {
+                    entries.forEach(e => { 
+                        if(e.isIntersecting) { e.target.classList.add('ghost-in'); }
+                    });
+                }, { threshold: 0.3 });
+                
+                document.querySelectorAll('.segment').forEach(s => obs.observe(s));
+            }, 1000);
+        };
     </script>
 </body>
 </html>
