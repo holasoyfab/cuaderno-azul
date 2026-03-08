@@ -87,54 +87,30 @@
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
 
-        /* --- ACORDEÓN HERO (TEXTO PROGRESIVO) --- */
+        /* --- ACORDEÓN HERO --- */
         .hero-accordion {
             margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            max-width: 600px;
-            padding: 0 20px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 15px; max-width: 600px; padding: 0 20px; z-index: 20;
         }
         #accordion-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
+            display: flex; flex-direction: column; gap: 15px; width: 100%;
         }
         .accordion-text {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-light);
-            text-align: center;
-            margin: 0;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: slideFadeIn 0.5s ease forwards;
+            font-size: 0.85rem; line-height: 1.6; color: var(--text-light);
+            text-align: center; margin: 0; opacity: 0;
+            transform: translateY(-10px); animation: slideFadeIn 0.5s ease forwards;
         }
-        @keyframes slideFadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideFadeIn { to { opacity: 1; transform: translateY(0); } }
+        
         .accordion-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: var(--text-main);
-            color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: 300;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            user-select: none;
-            flex-shrink: 0;
+            width: 35px; height: 35px; border-radius: 50%;
+            background-color: var(--text-main); color: var(--bg-color);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; font-weight: 300; cursor: pointer;
+            transition: all 0.3s ease; user-select: none; flex-shrink: 0;
         }
-        .accordion-btn:hover {
-            transform: scale(1.1);
-        }
+        .accordion-btn:hover { transform: scale(1.1); }
 
         /* --- 04. ORÁCULO --- */
         .oracle-instruction { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 4rem; text-transform: uppercase; text-align: center;}
@@ -149,36 +125,36 @@
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
         #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
 
-        /* --- 05. REVELACIÓN (LINTERNA + POLVO ATMOSFÉRICO) --- */
+        /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
             background-color: var(--bg-deep-blue) !important; 
-            color: white; flex-direction: row; justify-content: flex-start;
+            color: white; flex-direction: row; justify-content: center; gap: 8vw;
             overflow: hidden; padding: 0 !important;
         }
         
-        #reveal-interaction-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair; touch-action: none; 
-        }
-
         .reveal-ui { 
             z-index: 10; text-align: left; max-width: 400px; 
-            padding: 10vh 8vw; position: relative; pointer-events: none;
+            padding: 10vh 0; position: relative; pointer-events: none;
         }
         .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
         .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
         .reveal-ui a { pointer-events: auto; } 
-        
-        #reveal-masked-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2; pointer-events: none;
+
+        /* CONTENEDOR RESTRINGIDO: La luz y el bloqueo de scroll solo existen aquí dentro */
+        #reveal-container {
+            position: relative;
+            width: 100%; max-width: 450px; 
+            display: flex; justify-content: center; align-items: center;
+            padding: 30px; box-sizing: border-box;
+            cursor: crosshair; 
+            touch-action: none; /* Bloquea el scroll SOLO cuando el dedo está sobre el libro */
+            
             -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
         }
 
         .reveal-book-wrapper {
-            width: 100%; max-width: 380px; aspect-ratio: 3/4;
+            width: 100%; max-width: 350px; aspect-ratio: 3/4;
             background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
             box-shadow: 0 0 40px rgba(255,255,255,0.05); 
         }
@@ -189,6 +165,7 @@
             font-size: 0.4rem; color: #c0d0ff; 
             text-shadow: 0 0 3px rgba(192, 208, 255, 0.8);
             animation: floatAmbient 5s ease-in-out forwards;
+            z-index: 2;
         }
         @keyframes floatAmbient {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
@@ -196,7 +173,7 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO LÚDICO --- */
+        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO LÚDICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
         
@@ -266,10 +243,12 @@
 
         /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .reveal-segment { display: block; position: relative; }
-            .reveal-ui { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 20vh; padding-right: 0; }
-            .reveal-book-wrapper { max-width: 200px; }
+            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
+            .reveal-ui { padding: 12vh 8vw 2vh 8vw; margin: 0 auto; text-align: center; width: 100%; box-sizing: border-box;} 
+            
+            /* El contenedor de la luz se hace más pequeño en móvil para dejar espacio al scroll */
+            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto 10vh auto; }
+            .reveal-book-wrapper { max-width: 100%; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.15rem; padding: 0 5vw; line-height: 1.5; }
@@ -327,8 +306,7 @@
                 <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
-            <div id="reveal-interaction-layer"></div>
-            <div id="reveal-masked-layer">
+            <div id="reveal-container">
                 <div class="reveal-book-wrapper"></div>
             </div>
         </section>
@@ -590,7 +568,7 @@
         loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
         loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
-        // --- 02. FÍSICAS (SOLO LETRAS) ---
+        // --- 02. FÍSICAS ---
         const { Engine, Runner, Bodies, Composite, Events } = Matter;
         const engine = Engine.create();
         function initPhysics() {
@@ -668,44 +646,51 @@
             }
         });
 
-        // --- 04. REVELACIÓN ---
-        const interactionLayer = document.getElementById('reveal-interaction-layer');
-        const maskedLayer = document.getElementById('reveal-masked-layer');
+        // --- 04. REVELACIÓN (CONFINADA Y LIBRE DE SCROLL) ---
+        const revealContainer = document.getElementById('reveal-container');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
         setInterval(() => {
-            if (maskedLayer.style.getPropertyValue('--mx') === '') return;
+            if (revealContainer.style.getPropertyValue('--mx') === '') return;
             
-            const char = charsArr[Math.floor(Math.random() * charsArr.length)];
-            const el = document.createElement('div');
-            el.className = 'ambient-dust';
-            el.innerText = char;
-            
-            el.style.left = `${Math.random() * 100}%`; 
-            el.style.top = `${Math.random() * 100}%`;
-            
-            el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
-            
-            maskedLayer.appendChild(el);
-            setTimeout(() => el.remove(), 4500); 
-        }, 100);
+            for(let i = 0; i < 3; i++) {
+                const char = charsArr[Math.floor(Math.random() * charsArr.length)];
+                const el = document.createElement('div');
+                el.className = 'ambient-dust';
+                el.innerText = char;
+                
+                el.style.left = `${Math.random() * 100}%`; 
+                el.style.top = `${Math.random() * 100}%`;
+                el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
+                
+                revealContainer.appendChild(el);
+                setTimeout(() => el.remove(), 3000); 
+            }
+        }, 80);
 
         function updateFlashlight(x, y) {
-            maskedLayer.style.setProperty('--mx', `${x}px`);
-            maskedLayer.style.setProperty('--my', `${y}px`);
+            revealContainer.style.setProperty('--mx', `${x}px`);
+            revealContainer.style.setProperty('--my', `${y}px`);
         }
 
-        interactionLayer.addEventListener('mousemove', (e) => {
-            const rect = interactionLayer.getBoundingClientRect();
+        revealContainer.addEventListener('mousemove', (e) => {
+            const rect = revealContainer.getBoundingClientRect();
             updateFlashlight(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        interactionLayer.addEventListener('touchmove', (e) => {
-            const rect = interactionLayer.getBoundingClientRect();
+        revealContainer.addEventListener('mouseleave', () => {
+            revealContainer.style.setProperty('--mx', `-100%`);
+            revealContainer.style.setProperty('--my', `-100%`);
+        });
+
+        // El bloqueo táctil AHORA SOLO OCURRE dentro de la caja del libro
+        revealContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            const rect = revealContainer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: true}); 
+        }, {passive: false}); 
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -725,7 +710,7 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO Y SWIPE (SIN SONIDO) ---
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO Y SWIPE ---
         const directoryData = {
             '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.png' },
             'A': { artist: 'Pancho Muñante (PER)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
