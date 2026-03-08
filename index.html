@@ -117,7 +117,7 @@
         #oracle-key { cursor: grab; touch-action: none; z-index: 100; background: white; }
         #oracle-briefcase { border-style: dashed; }
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
-        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
+        #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center; white-space: pre-wrap;}
 
         /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
@@ -202,7 +202,6 @@
             transition: opacity 0.3s ease; min-height: 250px;
         }
         
-        /* Lupa y Modal de Imagen */
         .card-img-container { flex: 0 0 40%; max-width: 350px; position: relative; cursor: zoom-in; }
         .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
         .zoom-overlay {
@@ -212,14 +211,37 @@
         }
         .card-img-container:hover .zoom-overlay { opacity: 1; }
 
+        /* NUEVO: MODAL CON ZOOM DINÁMICO */
         .image-modal {
             display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(246, 245, 242, 0.95); justify-content: center; align-items: center;
-            cursor: zoom-out; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;
+            background-color: rgba(246, 245, 242, 0.98); flex-direction: column;
+            backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease;
         }
         .image-modal.show { display: flex; opacity: 1; }
-        .image-modal img { max-width: 95%; max-height: 90vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid var(--border-soft); }
+        .modal-top-bar {
+            display: flex; justify-content: space-between; padding: 20px 5vw;
+            background: rgba(246, 245, 242, 0.9); z-index: 100001; align-items: center;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .zoom-controls { display: flex; gap: 10px; }
+        .zoom-controls button {
+            background: transparent; border: 1px solid var(--text-main); color: var(--text-main);
+            padding: 5px 15px; border-radius: 20px; cursor: pointer; font-family: inherit; font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        .zoom-controls button.active { background: var(--text-main); color: var(--bg-color); }
+        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); font-family: inherit; font-weight: 300;}
         
+        .modal-img-wrapper {
+            flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; cursor: grab;
+        }
+        .modal-img-wrapper:active { cursor: grabbing; }
+        #modal-hi-res-img {
+            max-width: 100%; max-height: 100%; object-fit: contain;
+            transition: all 0.3s ease; transform-origin: center center;
+        }
+
         .card-info { flex: 1; text-align: left; position: relative; }
         .card-letter-bg { font-size: 5rem; font-weight: 300; color: var(--bg-color); position: absolute; top: -40px; left: -15px; z-index: 0; pointer-events: none;}
         .card-artist { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; position: relative; z-index: 1;}
@@ -358,14 +380,24 @@
                         <div class="card-artist" id="cv-artist"></div>
                         <div class="card-poem" id="cv-poem"></div>
                         
-                        <a href="mailto:azul.cuaderno@gmail.com?subject=Propuesta de Ilustración - Cuaderno Azul&body=Hola! Me gustaría enviar una propuesta para ilustrar un verso..." class="btn-minimal" style="margin-top: 20px; font-size: 0.65rem;">ILUSTRA AQUÍ</a>
+                        <a href="mailto:azul.cuaderno@gmail.com?subject=Propuesta de Ilustración - Cuaderno Azul&body=Hola! Me gustaría enviar una propuesta para ilustrar un verso..." class="btn-minimal" style="margin-top: 25px; font-size: 0.65rem; display: inline-block;">ILUSTRA AQUÍ</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div id="image-modal" class="image-modal" onclick="closeImageModal()">
-            <img id="modal-hi-res-img" src="" alt="Obra en detalle">
+        <div id="image-modal" class="image-modal">
+            <div class="modal-top-bar">
+                <div class="zoom-controls">
+                    <button onclick="setZoom(1)" id="btn-z1" class="active">1x</button>
+                    <button onclick="setZoom(2)" id="btn-z2">2x</button>
+                    <button onclick="setZoom(4)" id="btn-z4">4x</button>
+                </div>
+                <button class="close-modal" onclick="closeImageModal()">✕</button>
+            </div>
+            <div class="modal-img-wrapper" id="modal-img-wrapper">
+                <img id="modal-hi-res-img" src="" alt="Obra en detalle" onclick="cycleZoom()">
+            </div>
         </div>
 
         <section class="segment">
@@ -402,109 +434,48 @@
             }
         });
 
-        // --- BASE DE DATOS DE POEMAS (ORÁCULO Y LOADER) ---
-        const poemasArchivo = [
-            "Se ha producido un error, Daniel. / Te has alejado demasiado.",
-            "Debo ser el animal que solo piensa en el presente.",
-            "Este libro no es apto para policías.",
-            "Hoy soy solo los abrazos que te di.",
-            "Mientras más me alejo de la ciudad, más me acerco al mar.",
-            "El verano solo existe porque te amo / y te amo sólo porque existes.",
-            "El amor es mitad dolor. / ¿Y la otra mitad? / Tú.",
-            "Es ahora o ahora.",
-            "Extráñame, tal cual lo acordado.",
-            "Naceré cuando te vea / y moriré cuando me marche.",
-            "Los buenos amigos se conocen en el mar.",
-            "El amor siempre nos lleva a un mismo punto: encontrarnos con nosotros mismos.",
-            "Mi arte es existir.",
-            "El poema nace del mismo lugar que el beso.",
-            "Bailar siempre trae consecuencias.",
-            "No puede haber conciencia en una máquina no biológica.",
-            "Busco un barco que sepa naufragar.",
-            "Aquella canción me recuerda bailando.",
-            "¿Habrá pasado alguna vida en la que no nos dimos un beso?",
-            "Cierra los ojos y sigue leyendo.",
-            "La realidad solo por ser compartida ya es una negociación con el otro.",
-            "Baila con tu prójimo como contigo mismo.",
-            "¿Casualidad o causalidad?",
-            "Jamás se formó ciudadanía, se formó mano de obra.",
-            "Confiar en la máquina también es obedecer.",
-            "Ser rebelde no es no creer, es ya no creer.",
-            "Consume hasta morir.",
-            "La ciudad solo existe porque la imaginas.",
-            "La salida es el comienzo.",
-            "El diablo no sería quien es si no hubiese cometido el error de creer en dios.",
-            "Un segundo bastará para llegar a tu destino.",
-            "El ánimo de destrucción es también un ánimo de construcción.",
-            "¿Qué sería de dios sin las cárceles?",
-            "El tiempo es solo una duda.",
-            "No hay nada más sincero que despertar.",
-            "¿Dónde termina el tiempo y cuándo empieza el espacio?",
-            "Deja que todo se vaya lento.",
-            "Entramos al eterno infinito.",
-            "La muerte es la verdadera lucha contra el ego.",
-            "Escribir te hace libre de la idea.",
-            "El clic de tu encendedor es el nacimiento de una estrella.",
-            "El poder como dominación es un modelo eurocéntrico.",
-            "Te extraño más cuando no estás.",
-            "Todo lo que escribo se transforma en madrugada.",
-            "Yo solo escucho lo que tú dices.",
-            "Deberías estar a este lado del sol.",
-            "Yo olvido más de lo que escribo.",
-            "El futuro es la gran promise que lo justifica todo.",
-            "El pensamiento es la forma y el cuerpo el escenario.",
-            "El mar cumple una función filosófica.",
-            "Esperar es una forma de disciplinarnos.",
-            "En el Perú, después del fujimorismo, vino el fujimorismo.",
-            "Sembrar sueños gota a gota en el fondo del mar.",
-            "Besarte no es perder de ninguna forma.",
-            "El fragmento como totalidad del poema es el arma.",
-            "Se reparan galaxias destruidas.",
-            "La oscuridad lo hace todo más grande.",
-            "Lentamente la gravedad nos mata.",
-            "La competencia por la acumulación genera desigualdad.",
-            "La impunidad genera violencia.",
-            "El sistema no falla en su gramática, falla en su sentido.",
-            "Soy una gota y la muerte es un océano que me espera.",
-            "Hoy empieza la conquista del desierto.",
-            "Habitamos el sueño de un dios.",
-            "Lo divino es el presente, lo mortal es lo humano.",
-            "El silencio es más honesto que las palabras.",
-            "Tu pelo es tu mejor himno.",
-            "Deja que el lector imagine el poema.",
-            "Toma tiempo amar lo invisible.",
-            "Hoy soy un infinito dividido en todos.",
-            "El capital no puede invertir en la vida, solo en la muerte.",
-            "Sin memoria no hay inspiración ni justicia.",
-            "La imaginación crea, el sistema invade.",
-            "Jesús no murió, lo mataron.",
-            "La justicia solo existe cuando pone al ser humano en el centro.",
-            "Podrás dejar de ser clase media, pero jamás dejarás de trabajar.",
-            "Desmantelar el tiempo es un acto político.",
-            "El miedo al otro construye nuestra jaula.",
-            "Donde llega el ejército llega la Coca-Cola.",
-            "Con el capitalismo de por medio jamás seremos libres.",
-            "Lima solo es bella desde la indiferencia.",
-            "Esta página te mira cuando dejas de leerla.",
-            "La libertad solo se pierde cuando uno trata de encontrarla.",
-            "Cada vez que cierras los ojos te mienten.",
-            "La muerte es este momento / la vida es este momento.",
-            "El poema no es un contenedor de pensamientos, es la máquina que los produce.",
-            "Morir cuesta la vida.",
-            "El mar entero cabe en la mitad de tu sonrisa.",
-            "Deja de olvidarte tu nombre.",
-            "El otro es nuestra herida y nuestra salvación.",
-            "Necesitamos extinguirnos para salvar el planeta.",
-            "Todo depende de nada.",
-            "¿Podemos confiar en el olvido?",
-            "Es imposible vivir sin olvidar.",
-            "Obedecer es una forma de olvidar.",
-            "El absurdo debe ser radical.",
-            "Recordar es viajar a otro presente.",
-            "Sentir es otra forma de conocer.",
-            "El dinero es la medida del tiempo robado.",
-            "Mis mejores versos los hago en tus labios."
+        // --- BASE DE DATOS DE POEMAS DEL ORÁCULO (Mapeados con Letra) ---
+        const oraclePoems = [
+            { text: "El amor es mitad dolor / ¿y la otra mitad? / tú.", letter: "A" },
+            { text: "¿Qué bestia entregarle a la música?", letter: "B" },
+            { text: "Te tragaste tu corazón y el mío.", letter: "C" },
+            { text: "El diablo no sería quien es si no hubiese cometido el error de creer en Dios.", letter: "D" },
+            { text: "¿Me extrañas? /  Lo necesario para mentirte.", letter: "E" },
+            { text: "¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?", letter: "F" },
+            { text: "Gota a gota, la lluvia se agota.", letter: "G" },
+            { text: "Un hombre en una silla estornuda.", letter: "H" },
+            { text: "Tu pelo es tu mejor himno.", letter: "H" },
+            { text: "Los elefantes son infinitos.", letter: "I" },
+            { text: "Doblar una esquina y verte / Doblar un verte y llegar a una esquina.", letter: "J" },
+            { text: "La sonrisa es el aplauso de la magia.", letter: "K" },
+            { text: "Yo he llorado el humo de mis cigarros.", letter: "L" },
+            { text: "Here comes the moon.", letter: "M" },
+            { text: "No diré tu nombre (...) ... (...)", letter: "N" },
+            { text: "Cierra los ojos / ¿Qué es lo más lejos que ves? / Ya ahi", letter: "O" },
+            { text: "A veces confundo lo que escribo con lo que pienso.", letter: "P" },
+            { text: "Quererte es mi problema, no el tuyo.", letter: "Q" },
+            { text: "El miércoles hay reunión del fin del mundo. No te olvides.", letter: "R" },
+            { text: "No puedo dormir, pero me muero de sueño.", letter: "S" },
+            { text: "Tú eres tu máquina del tiempo.", letter: "T" },
+            { text: "Uno es un uno universal.", letter: "U" },
+            { text: "Desde este momento en ti voy a viajar.", letter: "V" },
+            { text: "We Are wishes.", letter: "W" },
+            { text: "Nada de interpretar sueños. Soñar con la muerte es el infinito.", letter: "X" },
+            { text: "Lost in the woods.", letter: "Y" },
+            { text: "Yo seguiré siendo la misma loca, la misma zurda por ambas manos.", letter: "Z" },
+            { text: "Apareces.", letter: "Colofón I" },
+            { text: "Mis mejores versos los hago en tus labios.", letter: "&" },
+            { text: "Tú nunca te molestarías conmigo. Nunca.", letter: "#" }
         ];
+
+        // Matriz base (Solo para el loader del inicio)
+        const poemasArchivo = oraclePoems.map(p => p.text).concat([
+            "Mi arte es existir.", "Bailar siempre trae consecuencias.", "No puede haber conciencia en una máquina no biológica.",
+            "Busco un barco que sepa naufragar.", "Jamás se formó ciudadanía, se formó mano de obra.",
+            "Confiar en la máquina también es obedecer.", "Consume hasta morir.", "La salida es el comienzo.",
+            "Entramos al eterno infinito.", "Escribir te hace libre de la idea.", "Te extraño más cuando no estás.",
+            "Sembrar sueños gota a gota en el fondo del mar.", "Besarte no es perder de ninguna forma."
+        ]);
 
         // --- 01. MATRIX LOADER ---
         const textContainer = document.getElementById('dynamic-text');
@@ -654,9 +625,19 @@
             
             if(box.classList.contains('proximity')) {
                 key.style.display = 'none'; box.innerHTML = "—";
-                let txt = poemasArchivo[Math.floor(Math.random() * poemasArchivo.length)], i = 0;
+                
+                let item = oraclePoems[Math.floor(Math.random() * oraclePoems.length)];
+                let plainTxt = item.text + "\n\n- Letra " + item.letter;
+                
                 verseText.innerHTML = "";
-                const type = () => { if(i < txt.length) { verseText.innerHTML += txt.charAt(i); i++; setTimeout(type, 40); }};
+                let i = 0;
+                const type = () => { 
+                    if(i < plainTxt.length) { 
+                        verseText.innerText += plainTxt.charAt(i); 
+                        i++; 
+                        setTimeout(type, 35); 
+                    }
+                };
                 type();
             } else {
                 currentX = 0; currentY = 0;
@@ -664,7 +645,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN ---
+        // --- 04. REVELACIÓN CONFINADA ---
         const bookZone = document.getElementById('reveal-container');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
@@ -727,7 +708,7 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO AND ISO UPDATES ---
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO ---
         const directoryData = {
             '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.png' },
             'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
@@ -760,8 +741,8 @@
             'COL-II': { artist: 'Kapitan Ketchup (PE)', poem: '...', file: '28 Colofón  II. Kapitan Ketchup. Lima. Peru.jpg' },
             'COL-III': { artist: 'Claudia Prezioso (UY)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay..jpg' },
             'COL-IV': { artist: 'Irene Fenollar (ES)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España..jpg' },
-            '31V': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
-            { text: "Tú nunca te molestarías conmigo. Nunca.", letter: "32F" },
+            '&': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
+            '#': { artist: 'German Gonzales (AR)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' },
             '?': { artist: 'El Autor', poem: 'Daniel nació en septiembre de 1988 en Lima, Perú. A los pocos días fue trasladado al consultorio psiquiátrico del Dr. Edmundo Beteta. Allí comenzó a escribir antes de estudiar en la Facultad de Literatura.\n\nPor razones firmamentales terminó graduándose en Antropología Cultural en la PUCP.\n\nNo es su primera vida ni en la Tierra ni fuera de ella. Este es, sin embargo, su primer poemario.', file: 'PERFIL.JPG' }
         };
 
@@ -773,7 +754,6 @@
             const ribbonLeft = document.getElementById('ribbon-left');
             const ribbonRight = document.getElementById('ribbon-right');
             
-            // Arrow navigation
             ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
             ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
 
@@ -846,7 +826,9 @@
             }
         }
 
-        // --- LÓGICA DE MODAL (ZOOM IMAGEN) ---
+        // --- LÓGICA DE MODAL CON ZOOM ---
+        let currentZoom = 1;
+
         function openImageModal() {
             const imgSrc = document.getElementById('cv-img').src;
             const modal = document.getElementById('image-modal');
@@ -854,6 +836,7 @@
             modal.classList.add('show');
             document.documentElement.style.overflow = 'hidden'; 
             document.body.style.overflow = 'hidden'; 
+            setZoom(1);
         }
 
         function closeImageModal() {
@@ -861,6 +844,41 @@
             modal.classList.remove('show');
             document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
+        }
+
+        function setZoom(level) {
+            currentZoom = level;
+            
+            document.querySelectorAll('.zoom-controls button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-z' + level).classList.add('active');
+            
+            const img = document.getElementById('modal-hi-res-img');
+            const wrapper = document.getElementById('modal-img-wrapper');
+            
+            if (level === 1) {
+                img.style.width = 'auto';
+                img.style.height = '100%';
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '100%';
+                img.style.cursor = 'zoom-in';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.justifyContent = 'center';
+            } else {
+                // Al hacer zoom ampliamos el ancho para que el wrapper haga scroll automático
+                img.style.width = `${level * 100}vw`;
+                img.style.height = 'auto';
+                img.style.maxWidth = 'none';
+                img.style.maxHeight = 'none';
+                img.style.cursor = level === 4 ? 'zoom-out' : 'zoom-in';
+                wrapper.style.alignItems = 'flex-start';
+                wrapper.style.justifyContent = 'flex-start';
+            }
+        }
+
+        function cycleZoom() {
+            if (currentZoom === 1) setZoom(2);
+            else if (currentZoom === 2) setZoom(4);
+            else setZoom(1);
         }
 
         // --- ARRANQUE ---
