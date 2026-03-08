@@ -21,11 +21,6 @@
             --border-soft: #d8d6d0;
         }
 
-        /* --- UX: SCROLL MAGNÉTICO (RESISTENCIA) --- */
-        html {
-            scroll-snap-type: y mandatory;
-        }
-
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'IBM Plex Mono', monospace; 
@@ -46,8 +41,8 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             padding: 2vw; box-sizing: border-box; overflow: hidden;
             text-align: justify; word-break: break-all; 
-            font-size: 0.85rem; /* Más chiquito */
-            letter-spacing: -1.5px; /* Interletrado más junto */
+            font-size: 0.85rem; 
+            letter-spacing: -1.5px; 
             line-height: 1.5; 
             color: rgba(0, 0, 0, 0.35); 
             -webkit-mask-image: radial-gradient(circle at center, transparent 130px, black 150px);
@@ -81,8 +76,6 @@
             justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
             opacity: 0; transform: translateY(40px);
             transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-            scroll-snap-align: start; /* Enganche magnético por sección */
-            scroll-snap-stop: always; 
         }
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
@@ -109,7 +102,7 @@
         
         #reveal-interaction-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair; touch-action: none; /* Evita que el dedo haga scroll mientras iluminas */
+            z-index: 5; cursor: crosshair; 
         }
 
         .reveal-ui { 
@@ -145,18 +138,6 @@
             0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
             50% { opacity: 0.7; } 
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
-        }
-
-        /* Botón de escape de la linterna */
-        .scroll-down-btn {
-            position: absolute; bottom: 4vh; left: 50%; transform: translateX(-50%);
-            z-index: 30; color: rgba(255,255,255,0.5); font-size: 0.6rem;
-            letter-spacing: 4px; cursor: pointer; padding: 15px; text-align: center;
-            animation: bounceFloat 2s infinite; pointer-events: auto;
-        }
-        @keyframes bounceFloat {
-            0%, 100% { transform: translate(-50%, 0); opacity: 0.4; }
-            50% { transform: translate(-50%, 8px); opacity: 1; }
         }
 
         /* --- 06. ARCHIVO VISUAL Y DIRECTORIO --- */
@@ -205,7 +186,7 @@
             border-style: solid !important;
         }
 
-        /* MOBILE ADJUSTMENTS (SOLAPAMIENTO ARREGLADO) */
+        /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
             .reveal-segment { display: block; position: relative; }
             .reveal-ui { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
@@ -260,10 +241,6 @@
             <div id="reveal-interaction-layer"></div>
             <div id="reveal-masked-layer">
                 <div class="reveal-book-wrapper"></div>
-            </div>
-
-            <div class="scroll-down-btn" onclick="document.getElementById('section-premio').scrollIntoView({behavior: 'smooth'})">
-                ↓ SEGUIR LEYENDO ↓
             </div>
         </section>
 
@@ -511,7 +488,7 @@
         loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
         loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
-        // --- 02. FÍSICAS ---
+        // --- 02. FÍSICAS (SOLO LETRAS, SIN NÚMEROS) ---
         const { Engine, Runner, Bodies, Composite, Events } = Matter;
         const engine = Engine.create();
         function initPhysics() {
@@ -521,7 +498,7 @@
             let letters = [];
             const drop = setInterval(() => {
                 if(letters.length > 150) { clearInterval(drop); return; }
-                const char = "0123456789abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random()*36));
+                const char = "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random()*26));
                 const size = Math.random() * 35 + 10;
                 const div = document.createElement('div');
                 div.className = 'physics-letter'; div.innerText = char; div.style.fontSize = size + 'px';
@@ -606,7 +583,7 @@
             }
         });
 
-        // --- 04. REVELACIÓN ---
+        // --- 04. REVELACIÓN (SCROLL LIBERADO) ---
         const interactionLayer = document.getElementById('reveal-interaction-layer');
         const maskedLayer = document.getElementById('reveal-masked-layer');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
@@ -641,10 +618,10 @@
         });
 
         interactionLayer.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // EVITA QUE EL USUARIO HAGA SCROLL ACCIDENTAL AL USAR LA LINTERNA EN MÓVIL
+            // SE HA QUITADO EL PREVENT DEFAULT PARA PERMITIR SCROLL NATURAL
             const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: false});
+        }, {passive: true}); // PASSIVE TRUE PERMITE EL SCROLL NATIVO
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
