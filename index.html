@@ -147,17 +147,16 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO --- */
+        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO LÚDICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
-        .gallery-header p { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); margin-bottom: 30px;}
         
-        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; }
+        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; margin-top: 20px;}
         
         .alphabet-ribbon {
             display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
             padding-bottom: 0; border-bottom: 2px solid var(--text-main);
-            margin-bottom: 30px; cursor: grab;
+            margin-bottom: 30px; cursor: grab; scroll-behavior: smooth;
         }
         .alphabet-ribbon::-webkit-scrollbar { display: none; }
         
@@ -166,7 +165,7 @@
             transition: all 0.2s ease; flex-shrink: 0; font-weight: 400; 
             padding: 8px 15px; border: 1px solid var(--text-main);
             border-bottom: none; border-radius: 5px 5px 0 0;
-            background: #e9e8e4; white-space: nowrap;
+            background: #e9e8e4; white-space: nowrap; user-select: none;
         }
         .alpha-letter:hover { background: #dcdbd7; }
         .alpha-letter.active {
@@ -179,6 +178,7 @@
             background: white; padding: 30px; border: 1px solid var(--border-soft);
             box-shadow: 0 10px 30px rgba(0,0,0,0.02);
             transition: opacity 0.3s ease; min-height: 250px;
+            /* touch-action: pan-y; permite scroll vertical en la tarjeta si es necesario, capturamos el horizontal con JS */
         }
         .card-img-container { flex: 0 0 40%; max-width: 350px; }
         .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
@@ -186,7 +186,7 @@
         .card-info { flex: 1; text-align: left; position: relative; }
         .card-letter-bg { font-size: 5rem; font-weight: 300; color: var(--bg-color); position: absolute; top: -40px; left: -15px; z-index: 0; pointer-events: none;}
         .card-artist { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; position: relative; z-index: 1;}
-        .card-poem { font-size: 1.2rem; font-style: italic; color: var(--text-light); line-height: 1.6; position: relative; z-index: 1;}
+        .card-poem { font-size: 1.2rem; font-style: italic; color: var(--text-light); line-height: 1.6; position: relative; z-index: 1; white-space: pre-wrap;}
 
         /* --- 07. PREMIO MINCUL --- */
         .award-segment { background: var(--bg-dark) !important; color: white; text-align: center; overflow: hidden; }
@@ -219,9 +219,9 @@
         /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
             .reveal-segment { display: block; position: relative; }
-            .reveal-ui { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 25vh; padding-right: 0; }
-            .reveal-book-wrapper { max-width: 220px; }
+            .reveal-ui { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
+            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 20vh; padding-right: 0; }
+            .reveal-book-wrapper { max-width: 200px; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.15rem; padding: 0 5vw; line-height: 1.5; }
@@ -307,7 +307,7 @@
 
                 <div class="contact-card" id="contact-viewer">
                     <div class="card-img-container">
-                        <img id="cv-img" src="" alt="Obra">
+                        <img id="cv-img" src="" alt="Obra" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'400\'><rect width=\'300\' height=\'400\' fill=\'%23f6f5f2\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'14px\' fill=\'%23aaa\'>OBRA NO ENCONTRADA</text></svg>'">
                     </div>
                     <div class="card-info">
                         <div class="card-letter-bg" id="cv-letter-bg"></div>
@@ -325,7 +325,7 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE POEMAS ---
+        // --- BASE DE DATOS DE POEMAS (ORÁCULO Y LOADER) ---
         const poemasArchivo = [
             "Se ha producido un error, Daniel. / Te has alejado demasiado.",
             "Debo ser el animal que solo piensa en el presente.",
@@ -627,9 +627,10 @@
         });
 
         interactionLayer.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
             const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: true});
+        }, {passive: false}); 
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -649,13 +650,48 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO ---
-        // Base de datos que vincula la letra/código con el nombre del artista, el verso exacto y su nombre de archivo
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO Y SWIPE ---
+        // Genera sonido tipo "máquina de escribir" al cambiar de pestaña
+        function playTypewriterSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Golpe mecánico (clack)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+
+                // Ruido de alta frecuencia para textura
+                const noise = ctx.createBufferSource();
+                const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) { data[i] = Math.random() * 2 - 1; }
+                noise.buffer = buffer;
+                const noiseFilter = ctx.createBiquadFilter();
+                noiseFilter.type = 'highpass';
+                noiseFilter.frequency.value = 3000;
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.2, ctx.currentTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(ctx.destination);
+                noise.start();
+            } catch(e) {}
+        }
+
         const directoryData = {
+            '?': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: '../cuaderno_original.png' },
             'A': { artist: 'Pancho Muñante (PER)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
             'B': { artist: 'Mónica Torrejon (PER)', poem: '¿Qué bestia entregarle a la música?', file: '2B. Mónica Torrejon. Torreja. Cuaderno Azul. Poemario.Peru.jpg' },
             'C': { artist: 'Flor Marin (PER)', poem: 'Te tragaste tu corazón y el mío.', file: '3C. Te tragaste tu corazon. Flor Marin. Lima Peru. Cuaderno Azul. Poemario.jpg' },
-            'D': { artist: 'Diablo Cosmico (PER)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg.jpg' },
+            'D': { artist: 'Cósmico (PER)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg.jpg' },
             'E': { artist: 'Carla Eráusquin (PER)', poem: '¿Me extrañas? /  Lo necesario para mentirte.', file: '5E. Gris. Me extrañas. Lima Peru Carla Eráusquin. Cuaderno Azul. Poemario..png' },
             'F': { artist: 'Anthony Bornachot (FRA)', poem: '¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?', file: '6F. Literatura fantástica. Paris Francia Anthony Bornachot. Cuaderno Azul. Poemario..jpg' },
             'G': { artist: 'Edurne Lacunza (ESP)', poem: 'Gota a gota, la lluvia se agota.', file: '7G. Gota a gota. Edurne Lacunza. Barcelona. España. Cuaderno Azul. Poemario.jpg' },
@@ -686,14 +722,17 @@
             '32F': { artist: 'German Gonzales (ARG)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' }
         };
 
+        let currentDirIndex = 0;
+        const dirKeys = Object.keys(directoryData);
+
         function initDirectory() {
             const ribbon = document.getElementById('alpha-ribbon');
-            const keys = Object.keys(directoryData);
             
-            keys.forEach((key, index) => {
+            dirKeys.forEach((key, index) => {
                 let div = document.createElement('div');
                 div.className = 'alpha-letter';
                 div.innerText = key;
+                div.id = 'tab-' + index;
                 
                 if(index === 0) {
                     div.classList.add('active');
@@ -701,20 +740,58 @@
                 }
                 
                 div.onclick = () => {
-                    document.querySelectorAll('.alpha-letter').forEach(el => el.classList.remove('active'));
-                    div.classList.add('active');
-                    
-                    const viewer = document.getElementById('contact-viewer');
-                    viewer.style.opacity = 0;
-                    
-                    setTimeout(() => { loadContactCard(key); viewer.style.opacity = 1; }, 300);
+                    selectDirTab(index);
                 };
                 ribbon.appendChild(div);
             });
+
+            // Lógica para Swipe en Móviles sobre el visualizador
+            const viewer = document.getElementById('contact-viewer');
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            viewer.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            viewer.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+
+            function handleSwipe() {
+                if (touchEndX < touchStartX - 50) {
+                    // Desliza a la Izquierda -> Siguiente
+                    if (currentDirIndex < dirKeys.length - 1) selectDirTab(currentDirIndex + 1);
+                }
+                if (touchEndX > touchStartX + 50) {
+                    // Desliza a la Derecha -> Anterior
+                    if (currentDirIndex > 0) selectDirTab(currentDirIndex - 1);
+                }
+            }
+        }
+
+        function selectDirTab(index) {
+            if(index === currentDirIndex) return;
+            currentDirIndex = index;
+            const key = dirKeys[index];
+
+            playTypewriterSound();
+
+            document.querySelectorAll('.alpha-letter').forEach(el => el.classList.remove('active'));
+            const activeTab = document.getElementById('tab-' + index);
+            activeTab.classList.add('active');
+
+            // Centra la pestaña activa en la cinta de scroll automáticamente
+            activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+            const viewer = document.getElementById('contact-viewer');
+            viewer.style.opacity = 0;
+            
+            setTimeout(() => { loadContactCard(key); viewer.style.opacity = 1; }, 300);
         }
 
         function loadContactCard(key) {
-            // Carga exactamente el nombre de archivo tal como lo tienes en tu sistema
             document.getElementById('cv-img').src = 'img/ilu/' + directoryData[key].file;
             document.getElementById('cv-letter-bg').innerText = key;
             document.getElementById('cv-artist').innerText = directoryData[key].artist;
