@@ -87,30 +87,55 @@
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
 
-        /* --- ACORDEÓN HERO --- */
+        /* --- ACORDEÓN HERO (TEXTO PROGRESIVO) --- */
         .hero-accordion {
             margin-top: 30px;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 15px; max-width: 600px; padding: 0 20px; z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 600px;
+            padding: 0 20px;
+            z-index: 20;
         }
         #accordion-content {
-            display: flex; flex-direction: column; gap: 15px; width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
         }
         .accordion-text {
-            font-size: 0.85rem; line-height: 1.6; color: var(--text-light);
-            text-align: center; margin: 0; opacity: 0;
-            transform: translateY(-10px); animation: slideFadeIn 0.5s ease forwards;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            text-align: center;
+            margin: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: slideFadeIn 0.5s ease forwards;
         }
-        @keyframes slideFadeIn { to { opacity: 1; transform: translateY(0); } }
-        
+        @keyframes slideFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
         .accordion-btn {
-            width: 35px; height: 35px; border-radius: 50%;
-            background-color: var(--text-main); color: var(--bg-color);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; font-weight: 300; cursor: pointer;
-            transition: all 0.3s ease; user-select: none; flex-shrink: 0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            flex-shrink: 0;
         }
-        .accordion-btn:hover { transform: scale(1.1); }
+        .accordion-btn:hover {
+            transform: scale(1.1);
+        }
 
         /* --- 04. ORÁCULO --- */
         .oracle-instruction { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 4rem; text-transform: uppercase; text-align: center;}
@@ -128,33 +153,33 @@
         /* --- 05. REVELACIÓN (LINTERNA CONFINADA) --- */
         .reveal-segment { 
             background-color: var(--bg-deep-blue) !important; 
-            color: white; flex-direction: row; justify-content: center; gap: 8vw;
+            color: white; flex-direction: row; justify-content: flex-start;
             overflow: hidden; padding: 0 !important;
         }
         
+        #reveal-interaction-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; cursor: crosshair; touch-action: none; 
+        }
+
         .reveal-ui { 
             z-index: 10; text-align: left; max-width: 400px; 
-            padding: 10vh 0; position: relative; pointer-events: none;
+            padding: 10vh 8vw; position: relative; pointer-events: none;
         }
         .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
         .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
         .reveal-ui a { pointer-events: auto; } 
-
-        /* CONTENEDOR RESTRINGIDO: La luz y el bloqueo de scroll solo existen aquí dentro */
-        #reveal-container {
-            position: relative;
-            width: 100%; max-width: 450px; 
-            display: flex; justify-content: center; align-items: center;
-            padding: 30px; box-sizing: border-box;
-            cursor: crosshair; 
-            touch-action: none; /* Bloquea el scroll SOLO cuando el dedo está sobre el libro */
-            
+        
+        #reveal-masked-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
             -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
+            display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
         }
 
         .reveal-book-wrapper {
-            width: 100%; max-width: 350px; aspect-ratio: 3/4;
+            width: 100%; max-width: 380px; aspect-ratio: 3/4;
             background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
             box-shadow: 0 0 40px rgba(255,255,255,0.05); 
         }
@@ -165,7 +190,6 @@
             font-size: 0.4rem; color: #c0d0ff; 
             text-shadow: 0 0 3px rgba(192, 208, 255, 0.8);
             animation: floatAmbient 5s ease-in-out forwards;
-            z-index: 2;
         }
         @keyframes floatAmbient {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
@@ -173,16 +197,26 @@
             100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO LÚDICO --- */
+        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
         
         .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; margin-top: 20px;}
         
+        /* Contenedor de Pestañas con Flechas Sutiles */
+        .ribbon-wrapper {
+            display: flex; align-items: center; width: 100%; margin-bottom: 30px; border-bottom: 2px solid var(--text-main);
+        }
+        .ribbon-arrow {
+            background: none; border: none; font-size: 1.8rem; color: var(--text-light); 
+            cursor: pointer; padding: 0 10px; z-index: 10; outline: none; transition: color 0.3s;
+            font-family: inherit; font-weight: 300; display: flex; align-items: center; justify-content: center;
+        }
+        .ribbon-arrow:hover { color: var(--text-main); }
+        
         .alphabet-ribbon {
             display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
-            padding-bottom: 0; border-bottom: 2px solid var(--text-main);
-            margin-bottom: 30px; cursor: grab; scroll-behavior: smooth;
+            padding-bottom: 0; cursor: grab; scroll-behavior: smooth; flex: 1;
         }
         .alphabet-ribbon::-webkit-scrollbar { display: none; }
         
@@ -205,9 +239,25 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.02);
             transition: opacity 0.3s ease; min-height: 250px;
         }
-        .card-img-container { flex: 0 0 40%; max-width: 350px; }
-        .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
         
+        /* Lupa y Modal de Imagen */
+        .card-img-container { flex: 0 0 40%; max-width: 350px; position: relative; cursor: zoom-in; }
+        .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
+        .zoom-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(246, 245, 242, 0.6); display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease; color: var(--text-main); font-size: 2rem;
+        }
+        .card-img-container:hover .zoom-overlay { opacity: 1; }
+
+        .image-modal {
+            display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(246, 245, 242, 0.95); justify-content: center; align-items: center;
+            cursor: zoom-out; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;
+        }
+        .image-modal.show { display: flex; opacity: 1; }
+        .image-modal img { max-width: 95%; max-height: 90vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid var(--border-soft); }
+
         .card-info { flex: 1; text-align: left; position: relative; }
         .card-letter-bg { font-size: 5rem; font-weight: 300; color: var(--bg-color); position: absolute; top: -40px; left: -15px; z-index: 0; pointer-events: none;}
         .card-artist { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; position: relative; z-index: 1;}
@@ -243,12 +293,10 @@
 
         /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .reveal-segment { flex-direction: column; text-align: center; justify-content: flex-start; }
-            .reveal-ui { padding: 12vh 8vw 2vh 8vw; margin: 0 auto; text-align: center; width: 100%; box-sizing: border-box;} 
-            
-            /* El contenedor de la luz se hace más pequeño en móvil para dejar espacio al scroll */
-            #reveal-container { max-width: 280px; padding: 10px; margin: 0 auto 10vh auto; }
-            .reveal-book-wrapper { max-width: 100%; }
+            .reveal-segment { display: block; position: relative; }
+            .reveal-ui { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
+            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 25vh; padding-right: 0; }
+            .reveal-book-wrapper { max-width: 220px; }
             
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.15rem; padding: 0 5vw; line-height: 1.5; }
@@ -258,6 +306,8 @@
             .card-artist { font-size: 1rem; }
             .card-poem { font-size: 1.1rem; }
             .card-letter-bg { font-size: 4rem; top: -30px; }
+            
+            .ribbon-arrow { font-size: 1.5rem; padding: 0 5px; }
         }
     </style>
 </head>
@@ -306,7 +356,8 @@
                 <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
-            <div id="reveal-container">
+            <div id="reveal-interaction-layer"></div>
+            <div id="reveal-masked-layer">
                 <div class="reveal-book-wrapper"></div>
             </div>
         </section>
@@ -334,11 +385,18 @@
             </div>
 
             <div class="directory-wrapper">
-                <div class="alphabet-ribbon" id="alpha-ribbon"></div>
+                <div class="ribbon-wrapper">
+                    <button class="ribbon-arrow" id="ribbon-left">‹</button>
+                    <div class="alphabet-ribbon" id="alpha-ribbon"></div>
+                    <button class="ribbon-arrow" id="ribbon-right">›</button>
+                </div>
 
                 <div class="contact-card" id="contact-viewer">
-                    <div class="card-img-container">
+                    <div class="card-img-container" onclick="openImageModal()">
                         <img id="cv-img" src="" alt="Obra" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'400\'><rect width=\'300\' height=\'400\' fill=\'%23f6f5f2\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'14px\' fill=\'%23aaa\'>OBRA NO ENCONTRADA</text></svg>'">
+                        <div class="zoom-overlay">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
                     </div>
                     <div class="card-info">
                         <div class="card-letter-bg" id="cv-letter-bg"></div>
@@ -348,6 +406,10 @@
                 </div>
             </div>
         </section>
+
+        <div id="image-modal" class="image-modal" onclick="closeImageModal()">
+            <img id="modal-hi-res-img" src="" alt="Obra en detalle">
+        </div>
 
         <section class="segment">
             <p style="opacity: 0.4;">El final siempre es el correcto.</p>
@@ -568,7 +630,7 @@
         loaderWrapper.addEventListener('touchstart', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
         loaderWrapper.addEventListener('touchmove', (e) => { if (!e.target.closest('#logo-container')) { handleInteraction(e); } }, {passive: true});
 
-        // --- 02. FÍSICAS ---
+        // --- 02. FÍSICAS (SOLO LETRAS) ---
         const { Engine, Runner, Bodies, Composite, Events } = Matter;
         const engine = Engine.create();
         function initPhysics() {
@@ -646,51 +708,44 @@
             }
         });
 
-        // --- 04. REVELACIÓN (CONFINADA Y LIBRE DE SCROLL) ---
-        const revealContainer = document.getElementById('reveal-container');
+        // --- 04. REVELACIÓN ---
+        const interactionLayer = document.getElementById('reveal-interaction-layer');
+        const maskedLayer = document.getElementById('reveal-masked-layer');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
         setInterval(() => {
-            if (revealContainer.style.getPropertyValue('--mx') === '') return;
+            if (maskedLayer.style.getPropertyValue('--mx') === '') return;
             
-            for(let i = 0; i < 3; i++) {
-                const char = charsArr[Math.floor(Math.random() * charsArr.length)];
-                const el = document.createElement('div');
-                el.className = 'ambient-dust';
-                el.innerText = char;
-                
-                el.style.left = `${Math.random() * 100}%`; 
-                el.style.top = `${Math.random() * 100}%`;
-                el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
-                el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
-                el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
-                
-                revealContainer.appendChild(el);
-                setTimeout(() => el.remove(), 3000); 
-            }
-        }, 80);
+            const char = charsArr[Math.floor(Math.random() * charsArr.length)];
+            const el = document.createElement('div');
+            el.className = 'ambient-dust';
+            el.innerText = char;
+            
+            el.style.left = `${Math.random() * 100}%`; 
+            el.style.top = `${Math.random() * 100}%`;
+            
+            el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
+            el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
+            el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
+            
+            maskedLayer.appendChild(el);
+            setTimeout(() => el.remove(), 4500); 
+        }, 100);
 
         function updateFlashlight(x, y) {
-            revealContainer.style.setProperty('--mx', `${x}px`);
-            revealContainer.style.setProperty('--my', `${y}px`);
+            maskedLayer.style.setProperty('--mx', `${x}px`);
+            maskedLayer.style.setProperty('--my', `${y}px`);
         }
 
-        revealContainer.addEventListener('mousemove', (e) => {
-            const rect = revealContainer.getBoundingClientRect();
+        interactionLayer.addEventListener('mousemove', (e) => {
+            const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        revealContainer.addEventListener('mouseleave', () => {
-            revealContainer.style.setProperty('--mx', `-100%`);
-            revealContainer.style.setProperty('--my', `-100%`);
-        });
-
-        // El bloqueo táctil AHORA SOLO OCURRE dentro de la caja del libro
-        revealContainer.addEventListener('touchmove', (e) => {
-            e.preventDefault(); 
-            const rect = revealContainer.getBoundingClientRect();
+        interactionLayer.addEventListener('touchmove', (e) => {
+            const rect = interactionLayer.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: false}); 
+        }, {passive: true});
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -710,41 +765,41 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO Y SWIPE ---
+        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO ---
         const directoryData = {
             '¿': { artist: 'El Proyecto', poem: 'Cuaderno Azul. Poemario es un libro de poesía experimental construido sobre un directorio telefónico, donde cada letra organiza un universo conceptual de versos breves escritos entre 2008 y 2026.\n\nCon el tiempo, el proyecto se transformó en una experiencia de poesía visual colaborativa e internacional: artistas de distintos países leen el poemario, eligen un verso y crean una ilustración inspirada en él.', file: 'cuaderno_original.png' },
-            'A': { artist: 'Pancho Muñante (PER)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
-            'B': { artist: 'Mónica Torrejon (PER)', poem: '¿Qué bestia entregarle a la música?', file: '2B. Mónica Torrejon. Torreja. Cuaderno Azul. Poemario.Peru.jpg' },
-            'C': { artist: 'Flor Marin (PER)', poem: 'Te tragaste tu corazón y el mío.', file: '3C. Te tragaste tu corazon. Flor Marin. Lima Peru. Cuaderno Azul. Poemario.jpg' },
-            'D': { artist: 'Cósmico (PER)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg.jpg' },
-            'E': { artist: 'Carla Eráusquin (PER)', poem: '¿Me extrañas? /  Lo necesario para mentirte.', file: '5E. Gris. Me extrañas. Lima Peru Carla Eráusquin. Cuaderno Azul. Poemario..png' },
-            'F': { artist: 'Anthony Bornachot (FRA)', poem: '¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?', file: '6F. Literatura fantástica. Paris Francia Anthony Bornachot. Cuaderno Azul. Poemario..jpg' },
-            'G': { artist: 'Edurne Lacunza (ESP)', poem: 'Gota a gota, la lluvia se agota.', file: '7G. Gota a gota. Edurne Lacunza. Barcelona. España. Cuaderno Azul. Poemario.jpg' },
-            'H': { artist: 'Daniela Beracochea (URU)', poem: 'Un hombre en una silla estornuda.', file: '8H. Daniela Beracochea.uruguay.jpg' },
-            'I': { artist: 'José Chang (MEX)', poem: 'Los elefantes son infinitos.', file: '9I. José Chang. Los Elefantes Son Infinitos.mexico.jpg' },
-            'J': { artist: 'Jessie Laura (PER)', poem: 'Doblar una esquina y verte / Doblar un verte y llegar a una esquina.', file: '10J. Jessie Laura. Doblar. Peru.Cuaderno Azul Poemario..jpg' },
-            'K': { artist: 'Sandra Travezaño (PER)', poem: 'La sonrisa es el aplauso de la magia.', file: '11K. La sonrisa. Sandra Travezaño. Lima Peru Cuaderno Azul. Poemario..jpg' },
-            'L': { artist: 'Carla Montalvo (PER)', poem: 'Yo he llorado el humo de mis cigarros.', file: '12L. Yo he llorado el humo de mis cigarros. Carla Montalvo. Lima PeruCuaderno Azul. Poemario.jpg' },
-            'M': { artist: 'Ismael Angeles (MEX)', poem: 'Here Comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF..jpg' },
-            'N': { artist: 'Bolo Torres (ECU)', poem: 'No diré tu nombre (...) ... (...)', file: '14N. Bolo Torres. Guayaquil. Ecuador.jpg' },
-            'O': { artist: 'Vanessa Alexandre (BRA)', poem: 'Cierra los ojos. ¿Qué es lo más lejos que ves ya ahí?', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario..jpg' },
-            'P': { artist: 'Meri Hernandez (ESP)', poem: 'A veces confundo lo que escribo con lo que pienso.', file: '16P. A veces sueño. Meri Hernandez. Barcelona. España. Cuaderno Azul. Poemario..jpg' },
-            'Q': { artist: 'Ber Yuen (PER)', poem: 'Quererte es mi problema, no el tuyo.', file: '17Q. Problema. Ber Yuen.Peru.jpg' },
-            'R': { artist: 'Lourdes Perez Lopez (ESP)', poem: 'El miércoles hay reunión del fin del mundo. No te olvides.', file: '18R. Fin del Mundo. Lourdes Perez Lopez. Cuaderno Azul. Poemario.Espana.JPG' },
-            'S': { artist: 'Jose Urbina (COL)', poem: 'No puedo dormir, pero me muero de sueño.', file: '19S. Insommia. Jose Urbina. (A.k.a.Tipohoc). Bogota. Colombia. Cuaderno Azul. Poemario..jpg' },
-            'T': { artist: 'Jerson La Torre (PER)', poem: 'Tú eres tu máquina del tiempo.', file: '20T. Tu eres tu maquina del tiempo. Jerson La Torre.Peru.jpg' },
-            'U': { artist: 'Daniel Mateos (MEX)', poem: 'Uno es un uno universal.', file: '21U. Uno es un uno universal. Daniel Mateos.Mexico.jpg' },
-            'V': { artist: 'Andrea Lertora (PER)', poem: 'Desde este momento en ti voy a viajar.', file: '22V. Andrea Lertora. Lima. Peru..jpg' },
-            'W': { artist: 'Dominique Millán (PER)', poem: 'We Are wishes.', file: '23W. Dominique Millán. Lima Peru. Cuaderno Azul. Poemario..jpg' },
-            'X': { artist: 'Marta Casares (ESP)', poem: 'Nada de interpretar sueños. Soñar con la muerte es el infinito.', file: '24X. Marta Casares. España..jpg' },
-            'Y': { artist: 'Mucho (PER)', poem: 'Lost in the woods.', file: '25Y. Lost Woods. Mucho. Lima Perú..jpg' },
-            'Z': { artist: 'Elian Tuya (PER)', poem: 'Yo seguiré siendo la misma loca, la misma zurda por ambas manos.', file: '26Z. Elian Tuya. Lima. Peru. Cuaderno Azul. Poemario..jpg' },
-            'COL-I': { artist: 'La Koneko (PER)', poem: 'Apareces.', file: '27 Colofón  I. La Koneko. Lima Peru..jpg' },
-            'COL-II': { artist: 'Kapitan Ketchup (PER)', poem: '...', file: '28 Colofón  II. Kapitan Ketchup. Lima. Peru.jpg' },
-            'COL-III': { artist: 'Claudia Prezioso (URU)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay..jpg' },
-            'COL-IV': { artist: 'Irene Fenollar (ESP)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España..jpg' },
-            '31V': { artist: 'Malcon D´Stefano (ARG)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
-            '32F': { artist: 'German Gonzales (ARG)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' },
+            'A': { artist: 'Pancho Muñante (PE)', poem: 'El amor es mitad dolor / ¿y la otra mitad? / tú.', file: '1A. Mitad. Pancho Muñante. Lima. Peru. Cuaderno Azul. Poemario.jpg' },
+            'B': { artist: 'Mónica Torrejon (PE)', poem: '¿Qué bestia entregarle a la música?', file: '2B. Mónica Torrejon. Torreja. Cuaderno Azul. Poemario.Peru.jpg' },
+            'C': { artist: 'Flor Marin (PE)', poem: 'Te tragaste tu corazón y el mío.', file: '3C. Te tragaste tu corazon. Flor Marin. Lima Peru. Cuaderno Azul. Poemario.jpg' },
+            'D': { artist: 'Cósmico (PE)', poem: 'El diablo no sería quien es si no hubiese cometido el error de creer en Dios.', file: '4D. Diablo. Cosmico. Lima. Peru. Cuaderno Azul. Poemario.jpg.jpg' },
+            'E': { artist: 'Carla Eráusquin (PE)', poem: '¿Me extrañas? /  Lo necesario para mentirte.', file: '5E. Gris. Me extrañas. Lima Peru Carla Eráusquin. Cuaderno Azul. Poemario..png' },
+            'F': { artist: 'Anthony Bornachot (FR)', poem: '¿Puede funcionar la literatura fantástica sin un hecho sobrenatural?', file: '6F. Literatura fantástica. Paris Francia Anthony Bornachot. Cuaderno Azul. Poemario..jpg' },
+            'G': { artist: 'Edurne Lacunza (ES)', poem: 'Gota a gota, la lluvia se agota.', file: '7G. Gota a gota. Edurne Lacunza. Barcelona. España. Cuaderno Azul. Poemario.jpg' },
+            'H': { artist: 'Daniela Beracochea (UY)', poem: 'Un hombre en una silla estornuda.', file: '8H. Daniela Beracochea.uruguay.jpg' },
+            'I': { artist: 'José Chang (MX)', poem: 'Los elefantes son infinitos.', file: '9I. José Chang. Los Elefantes Son Infinitos.mexico.jpg' },
+            'J': { artist: 'Jessie Laura (PE)', poem: 'Doblar una esquina y verte / Doblar un verte y llegar a una esquina.', file: '10J. Jessie Laura. Doblar. Peru.Cuaderno Azul Poemario..jpg' },
+            'K': { artist: 'Sandra Travezaño (PE)', poem: 'La sonrisa es el aplauso de la magia.', file: '11K. La sonrisa. Sandra Travezaño. Lima Peru Cuaderno Azul. Poemario..jpg' },
+            'L': { artist: 'Carla Montalvo (PE)', poem: 'Yo he llorado el humo de mis cigarros.', file: '12L. Yo he llorado el humo de mis cigarros. Carla Montalvo. Lima PeruCuaderno Azul. Poemario.jpg' },
+            'M': { artist: 'Ismael Angeles (MX)', poem: 'Here Comes the moon.', file: '13M. Here comes the moon. Ismael Angeles. Cuaderno Azul. Poemario. México DF..jpg' },
+            'N': { artist: 'Bolo Torres (EC)', poem: 'No diré tu nombre (...) ... (...)', file: '14N. Bolo Torres. Guayaquil. Ecuador.jpg' },
+            'O': { artist: 'Vanessa Alexandre (BR)', poem: 'Cierra los ojos. ¿Qué es lo más lejos que ves ya ahí?', file: '15O. Ahi. Vanessa Alexandre. Sao Paulo. Brazil. Cuaderno Azul. Poemario..jpg' },
+            'P': { artist: 'Meri Hernandez (ES)', poem: 'A veces confundo lo que escribo con lo que pienso.', file: '16P. A veces sueño. Meri Hernandez. Barcelona. España. Cuaderno Azul. Poemario..jpg' },
+            'Q': { artist: 'Ber Yuen (PE)', poem: 'Quererte es mi problema, no el tuyo.', file: '17Q. Problema. Ber Yuen.Peru.jpg' },
+            'R': { artist: 'Lourdes Perez Lopez (ES)', poem: 'El miércoles hay reunión del fin del mundo. No te olvides.', file: '18R. Fin del Mundo. Lourdes Perez Lopez. Cuaderno Azul. Poemario.Espana.JPG' },
+            'S': { artist: 'Jose Urbina (CO)', poem: 'No puedo dormir, pero me muero de sueño.', file: '19S. Insommia. Jose Urbina. (A.k.a.Tipohoc). Bogota. Colombia. Cuaderno Azul. Poemario..jpg' },
+            'T': { artist: 'Jerson La Torre (PE)', poem: 'Tú eres tu máquina del tiempo.', file: '20T. Tu eres tu maquina del tiempo. Jerson La Torre.Peru.jpg' },
+            'U': { artist: 'Daniel Mateos (MX)', poem: 'Uno es un uno universal.', file: '21U. Uno es un uno universal. Daniel Mateos.Mexico.jpg' },
+            'V': { artist: 'Andrea Lertora (PE)', poem: 'Desde este momento en ti voy a viajar.', file: '22V. Andrea Lertora. Lima. Peru..jpg' },
+            'W': { artist: 'Dominique Millán (PE)', poem: 'We Are wishes.', file: '23W. Dominique Millán. Lima Peru. Cuaderno Azul. Poemario..jpg' },
+            'X': { artist: 'Marta Casares (ES)', poem: 'Nada de interpretar sueños. Soñar con la muerte es el infinito.', file: '24X. Marta Casares. España..jpg' },
+            'Y': { artist: 'Mucho (PE)', poem: 'Lost in the woods.', file: '25Y. Lost Woods. Mucho. Lima Perú..jpg' },
+            'Z': { artist: 'Elian Tuya (PE)', poem: 'Yo seguiré siendo la misma loca, la misma zurda por ambas manos.', file: '26Z. Elian Tuya. Lima. Peru. Cuaderno Azul. Poemario..jpg' },
+            'COL-I': { artist: 'La Koneko (PE)', poem: 'Apareces.', file: '27 Colofón  I. La Koneko. Lima Peru..jpg' },
+            'COL-II': { artist: 'Kapitan Ketchup (PE)', poem: '...', file: '28 Colofón  II. Kapitan Ketchup. Lima. Peru.jpg' },
+            'COL-III': { artist: 'Claudia Prezioso (UY)', poem: '...', file: '29 Colofón III. Claudia Prezioso. Motevideo, Uruguay..jpg' },
+            'COL-IV': { artist: 'Irene Fenollar (ES)', poem: '...', file: '30 Colofón IV. Irene Fenollar. Valencia. España..jpg' },
+            '31V': { artist: 'Malcon D´Stefano (AR)', poem: 'Mis mejores versos los hago en tus labios.', file: '31V Malcon D´Stefano. Santa Fe Argentina..jpg' },
+            '32F': { artist: 'German Gonzales (AR)', poem: 'Tú nunca te molestarías conmigo. Nunca.', file: '32F German Gonzales.Argentino.jpg' },
             '?': { artist: 'El Autor', poem: 'Daniel nació en septiembre de 1988 en Lima, Perú. A los pocos días fue trasladado al consultorio psiquiátrico del Dr. Edmundo Beteta. Allí comenzó a escribir antes de estudiar en la Facultad de Literatura.\n\nPor razones firmamentales terminó graduándose en Antropología Cultural en la PUCP.\n\nNo es su primera vida ni en la Tierra ni fuera de ella. Este es, sin embargo, su primer poemario.', file: 'PERFIL.JPG' }
         };
 
@@ -753,7 +808,12 @@
 
         function initDirectory() {
             const ribbon = document.getElementById('alpha-ribbon');
+            const ribbonLeft = document.getElementById('ribbon-left');
+            const ribbonRight = document.getElementById('ribbon-right');
             
+            ribbonLeft.onclick = () => { ribbon.scrollBy({ left: -150, behavior: 'smooth' }); };
+            ribbonRight.onclick = () => { ribbon.scrollBy({ left: 150, behavior: 'smooth' }); };
+
             dirKeys.forEach((key, index) => {
                 let div = document.createElement('div');
                 div.className = 'alpha-letter';
@@ -821,6 +881,23 @@
             } else {
                 document.getElementById('cv-poem').innerText = `"${directoryData[key].poem}"`;
             }
+        }
+
+        // --- LÓGICA DE MODAL (ZOOM IMAGEN) ---
+        function openImageModal() {
+            const imgSrc = document.getElementById('cv-img').src;
+            const modal = document.getElementById('image-modal');
+            document.getElementById('modal-hi-res-img').src = imgSrc;
+            modal.classList.add('show');
+            document.documentElement.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('show');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
         }
 
         // --- ARRANQUE ---
