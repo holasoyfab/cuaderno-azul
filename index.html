@@ -21,11 +21,6 @@
             --border-soft: #d8d6d0;
         }
 
-        /* --- UX: SCROLL MAGNÉTICO (RESISTENCIA) --- */
-        html {
-            scroll-snap-type: y mandatory;
-        }
-
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'IBM Plex Mono', monospace; 
@@ -81,8 +76,6 @@
             justify-content: center; padding: 10vh 8vw; box-sizing: border-box; position: relative;
             opacity: 0; transform: translateY(40px);
             transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            scroll-snap-align: start; 
-            scroll-snap-stop: always; 
         }
         .segment.ghost-in { opacity: 1; transform: translateY(0); }
         .chapter-mark { position: absolute; top: 40px; left: 40px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; }
@@ -100,58 +93,51 @@
         #oracle-briefcase.proximity { transform: scale(1.1); border-style: solid; background-color: var(--text-main); color: var(--bg-color); }
         #oracle-verse-container { margin: 4rem auto 0; min-height: 80px; width: 100%; max-width: 600px; font-style: italic; font-size: 1.3rem; line-height: 1.6; text-align: center;}
 
-        /* --- 05. REVELACIÓN (LINTERNA + POLVO ATMOSFÉRICO) --- */
+        /* --- 05. REVELACIÓN (LINTERNA CONFINADA AL LIBRO) --- */
         .reveal-segment { 
             background-color: var(--bg-deep-blue) !important; 
-            color: white; flex-direction: row; justify-content: flex-start;
+            color: white; flex-direction: row; justify-content: center; gap: 10vw;
             overflow: hidden; padding: 0 !important;
-        }
-        
-        #reveal-interaction-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5; cursor: crosshair; touch-action: none; 
         }
 
         .reveal-ui { 
             z-index: 10; text-align: left; max-width: 400px; 
-            padding: 10vh 8vw; position: relative; pointer-events: none;
+            position: relative; pointer-events: none;
         }
-        .reveal-ui h2 { font-weight: 300; font-size: 1rem; color: #8892b0; line-height: 1.5; }
+        .reveal-ui h2 { font-weight: 300; font-size: 1.1rem; color: #8892b0; line-height: 1.5; }
         .reveal-ui h2 span { display: block; font-size: 2.5rem; color: #fff; margin: 15px 0; }
         .reveal-ui a { pointer-events: auto; } 
         
-        #reveal-masked-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2; pointer-events: none;
-            -webkit-mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            mask-image: radial-gradient(circle 12vh at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            display: flex; justify-content: flex-end; align-items: center; padding-right: 15vw; box-sizing: border-box;
-        }
-
-        .reveal-book-wrapper {
+        #reveal-book-zone {
+            position: relative;
             width: 100%; max-width: 380px; aspect-ratio: 3/4;
             background-image: url('img/portada.jpg'); background-size: cover; background-position: center;
-            box-shadow: 0 0 40px rgba(255,255,255,0.05); 
+            box-shadow: 0 0 40px rgba(255,255,255,0.02); 
+            cursor: crosshair; overflow: hidden;
+            /* La luz ahora vive solo aquí adentro, dejando el resto de la pantalla libre para el scroll */
+            -webkit-mask-image: radial-gradient(circle 120px at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
+            mask-image: radial-gradient(circle 120px at var(--mx, -100%) var(--my, -100%), rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
         }
 
         .ambient-dust {
             position: absolute; pointer-events: none;
-            font-family: 'IBM Plex Mono', monospace; font-weight: 300; 
-            font-size: 0.4rem; color: #c0d0ff; 
-            text-shadow: 0 0 3px rgba(192, 208, 255, 0.8);
-            animation: floatAmbient 5s ease-in-out forwards;
+            font-family: 'IBM Plex Mono', monospace; font-weight: 400; 
+            font-size: 0.6rem; color: #dce5ff; 
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
+            animation: floatAmbient 3s ease-in-out forwards;
         }
         @keyframes floatAmbient {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
-            50% { opacity: 0.7; } 
-            100% { opacity: 0; transform: translate(calc(var(--dx)*40px), calc(var(--dy)*40px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
+            50% { opacity: 0.9; } 
+            100% { opacity: 0; transform: translate(calc(var(--dx)*50px), calc(var(--dy)*50px)) scale(1.5) rotate(calc(var(--rot)*1deg)); }
         }
 
-        /* --- 06. ARCHIVO VISUAL / DIRECTORIO TELEFÓNICO LÚDICO --- */
+        /* --- 06. ARCHIVO VISUAL Y DIRECTORIO TELEFÓNICO --- */
         .gallery-segment { background: var(--bg-color); width: 100%; padding: 15vh 0; align-items: flex-start; justify-content: flex-start;}
         .gallery-header { padding: 0 8vw; width: 100%; box-sizing: border-box; text-align: left; }
+        .gallery-header p { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); margin-bottom: 30px;}
         
-        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; margin-top: 20px;}
+        .directory-wrapper { width: 100%; padding: 0 8vw; box-sizing: border-box; }
         
         .alphabet-ribbon {
             display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
@@ -178,7 +164,6 @@
             background: white; padding: 30px; border: 1px solid var(--border-soft);
             box-shadow: 0 10px 30px rgba(0,0,0,0.02);
             transition: opacity 0.3s ease; min-height: 250px;
-            /* touch-action: pan-y; permite scroll vertical en la tarjeta si es necesario, capturamos el horizontal con JS */
         }
         .card-img-container { flex: 0 0 40%; max-width: 350px; }
         .card-img-container img { width: 100%; height: auto; object-fit: contain; filter: grayscale(0.1); border: 1px solid #eee; }
@@ -218,11 +203,9 @@
 
         /* MOBILE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .reveal-segment { display: block; position: relative; }
-            .reveal-ui { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0; margin: 0; z-index: 10;} 
-            #reveal-masked-layer { justify-content: center; align-items: center; padding-top: 20vh; padding-right: 0; }
-            .reveal-book-wrapper { max-width: 200px; }
-            
+            .reveal-segment { flex-direction: column; text-align: center; justify-content: center; gap: 8vh;}
+            .reveal-ui { text-align: center; padding: 0; margin: 0;} 
+            #reveal-book-zone { margin: 0 auto; max-width: 250px; }
             .chapter-mark { top: 20px; left: 20px; z-index: 20;}
             .award-title { font-size: 1.15rem; padding: 0 5vw; line-height: 1.5; }
             
@@ -234,7 +217,7 @@
         }
     </style>
 </head>
-<body class="scroll-locked">
+<body>
 
     <div id="loader-wrapper">
         <div id="text-container"><span id="dynamic-text"></span></div>
@@ -274,10 +257,7 @@
                 <a href="https://wa.me/51987804557" target="_blank" class="btn-minimal btn-typewriter">Reservar ejemplar</a>
             </div>
 
-            <div id="reveal-interaction-layer"></div>
-            <div id="reveal-masked-layer">
-                <div class="reveal-book-wrapper"></div>
-            </div>
+            <div id="reveal-book-zone"></div>
         </section>
 
         <section class="segment award-segment" id="section-premio">
@@ -298,10 +278,6 @@
         <section class="segment gallery-segment">
             <div class="chapter-mark">E. ARCHIVO VISUAL</div>
             
-            <div class="gallery-header">
-                <h2 style="font-weight: 300; margin-bottom: 5px; font-size: 2rem;">Directorio</h2>
-            </div>
-
             <div class="directory-wrapper">
                 <div class="alphabet-ribbon" id="alpha-ribbon"></div>
 
@@ -325,7 +301,6 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE POEMAS (ORÁCULO Y LOADER) ---
         const poemasArchivo = [
             "Se ha producido un error, Daniel. / Te has alejado demasiado.",
             "Debo ser el animal que solo piensa en el presente.",
@@ -592,45 +567,50 @@
             }
         });
 
-        // --- 04. REVELACIÓN ---
-        const interactionLayer = document.getElementById('reveal-interaction-layer');
-        const maskedLayer = document.getElementById('reveal-masked-layer');
+        // --- 04. REVELACIÓN (LINTERNA CONFINADA AL LIBRO) ---
+        const bookZone = document.getElementById('reveal-book-zone');
         const charsArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-+*";
 
+        // Letras flotantes más intensas solo dentro del libro
         setInterval(() => {
-            if (maskedLayer.style.getPropertyValue('--mx') === '') return;
+            if (bookZone.style.getPropertyValue('--mx') === '') return;
             
-            const char = charsArr[Math.floor(Math.random() * charsArr.length)];
-            const el = document.createElement('div');
-            el.className = 'ambient-dust';
-            el.innerText = char;
-            
-            el.style.left = `${Math.random() * 100}%`; 
-            el.style.top = `${Math.random() * 100}%`;
-            
-            el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
-            el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
-            
-            maskedLayer.appendChild(el);
-            setTimeout(() => el.remove(), 4500); 
-        }, 100);
+            for(let i = 0; i < 3; i++) { // Salen de a 3 para más densidad de polvo
+                const char = charsArr[Math.floor(Math.random() * charsArr.length)];
+                const el = document.createElement('div');
+                el.className = 'ambient-dust';
+                el.innerText = char;
+                
+                el.style.left = `${Math.random() * 100}%`; 
+                el.style.top = `${Math.random() * 100}%`;
+                el.style.setProperty('--dx', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--dy', (Math.random() * 2 - 1).toFixed(2));
+                el.style.setProperty('--rot', (Math.random() * 90 - 45).toFixed(0));
+                
+                bookZone.appendChild(el);
+                setTimeout(() => el.remove(), 3000); 
+            }
+        }, 60);
 
         function updateFlashlight(x, y) {
-            maskedLayer.style.setProperty('--mx', `${x}px`);
-            maskedLayer.style.setProperty('--my', `${y}px`);
+            bookZone.style.setProperty('--mx', `${x}px`);
+            bookZone.style.setProperty('--my', `${y}px`);
         }
 
-        interactionLayer.addEventListener('mousemove', (e) => {
-            const rect = interactionLayer.getBoundingClientRect();
+        bookZone.addEventListener('mousemove', (e) => {
+            const rect = bookZone.getBoundingClientRect();
             updateFlashlight(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        interactionLayer.addEventListener('touchmove', (e) => {
-            e.preventDefault(); 
-            const rect = interactionLayer.getBoundingClientRect();
+        bookZone.addEventListener('mouseleave', () => {
+            bookZone.style.setProperty('--mx', `-100%`);
+            bookZone.style.setProperty('--my', `-100%`);
+        });
+
+        bookZone.addEventListener('touchmove', (e) => {
+            const rect = bookZone.getBoundingClientRect();
             updateFlashlight(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: false}); 
+        }, {passive: true});
 
         // --- 05. PREMIO MINCUL ---
         function createRadiatingSun() {
@@ -650,13 +630,10 @@
             }, 80);
         }
 
-        // --- 06. DIRECTORIO TELEFÓNICO INTERACTIVO Y SWIPE ---
-        // Genera sonido tipo "máquina de escribir" al cambiar de pestaña
+        // --- 06. DIRECTORIO TELEFÓNICO LÚDICO ---
         function playTypewriterSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Golpe mecánico (clack)
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'square';
@@ -669,7 +646,6 @@
                 osc.start();
                 osc.stop(ctx.currentTime + 0.05);
 
-                // Ruido de alta frecuencia para textura
                 const noise = ctx.createBufferSource();
                 const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -745,7 +721,6 @@
                 ribbon.appendChild(div);
             });
 
-            // Lógica para Swipe en Móviles sobre el visualizador
             const viewer = document.getElementById('contact-viewer');
             let touchStartX = 0;
             let touchEndX = 0;
@@ -761,11 +736,9 @@
 
             function handleSwipe() {
                 if (touchEndX < touchStartX - 50) {
-                    // Desliza a la Izquierda -> Siguiente
                     if (currentDirIndex < dirKeys.length - 1) selectDirTab(currentDirIndex + 1);
                 }
                 if (touchEndX > touchStartX + 50) {
-                    // Desliza a la Derecha -> Anterior
                     if (currentDirIndex > 0) selectDirTab(currentDirIndex - 1);
                 }
             }
@@ -782,7 +755,6 @@
             const activeTab = document.getElementById('tab-' + index);
             activeTab.classList.add('active');
 
-            // Centra la pestaña activa en la cinta de scroll automáticamente
             activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
             const viewer = document.getElementById('contact-viewer');
@@ -795,7 +767,7 @@
             document.getElementById('cv-img').src = 'img/ilu/' + directoryData[key].file;
             document.getElementById('cv-letter-bg').innerText = key;
             document.getElementById('cv-artist').innerText = directoryData[key].artist;
-            document.getElementById('cv-poem').innerText = `"${directoryData[key].poem}"`;
+            document.getElementById('cv-poem').innerText = key === '?' ? directoryData[key].poem : `"${directoryData[key].poem}"`;
         }
 
         // --- ARRANQUE ---
